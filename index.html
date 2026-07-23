@@ -95,19 +95,19 @@
             <textarea id="code-editor"></textarea>
           </div>
 
-          <!-- Bottom Panel: Interactive Terminal -->
+          <!-- Bottom Panel: Production macOS Terminal -->
           <div class="terminal-panel">
             <div class="panel-header">
-              <span class="tab active">Console</span>
-              <span class="tab">Test Output</span>
+              <span class="tab active">zsh</span>
+              <span class="tab">pytest</span>
               <div class="spacer"></div>
-              <i class="ph ph-trash action-icon" id="btn-clear-term" title="Clear Console"></i>
+              <i class="ph ph-trash action-icon" id="btn-clear-term" title="Clear Terminal (⌘K)"></i>
             </div>
             
             <div id="terminal-screen" class="terminal-content">
-              <div class="term-line text-tertiary">Session started: <span id="login-time"></span></div>
+              <div class="term-line text-tertiary">Last login: <span id="login-time"></span> on ttys001</div>
               <div id="terminal-log-stream">
-                <!-- Terminal stream goes here -->
+                <!-- Terminal stream appended here -->
               </div>
             </div>
           </div>

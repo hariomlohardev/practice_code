@@ -48,7 +48,7 @@ async function initializeApp() {
     }
   });
 
-  // Global Keyboard Shortcuts (Works from anywhere)
+  // Global Keyboard Shortcuts (Cmd/Ctrl + Enter)
   document.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
@@ -71,8 +71,8 @@ async function initializeApp() {
         loadingScreen.classList.add('hidden');
         appContainer.classList.remove('hidden');
         editor.refresh();
-        showToast("Engine Warmed Up", "ph-check-circle");
-        appendPrompt(); // Initialize interactive terminal
+        showToast("System Ready", "ph-check-circle");
+        appendPrompt();
     }, 300);
   } catch (err) {
     showToast("Engine Error: " + err.message, "ph-warning-circle");
@@ -99,10 +99,11 @@ async function initializeApp() {
     appendPrompt();
   });
 
-  // Focus terminal input when clicking anywhere in the terminal body
-  document.querySelector('.terminal-content').addEventListener('click', () => {
-    const input = termLogStream.querySelector('.term-input');
-    if (input) input.focus();
+  document.querySelector('.terminal-content').addEventListener('click', (e) => {
+    if (e.target.tagName !== 'INPUT') {
+      const input = termLogStream.querySelector('.term-input');
+      if (input) input.focus();
+    }
   });
 }
 
@@ -117,7 +118,7 @@ function triggerRichIntelliSense(cm) {
   const hintObj = {
     list: matches.map(item => ({
       text: item.text,
-      render: function(element, self, data) {
+      render: function(element) {
         element.innerHTML = `
           <div class="hint-left">
             <i class="ph-fill ${item.icon} hint-icon"></i>
@@ -142,8 +143,8 @@ function showToast(message, icon) {
 
   setTimeout(() => {
     toast.classList.add('exit');
-    setTimeout(() => toast.remove(), 400);
-  }, 3000);
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
 }
 
 function renderProblem(problem) {
@@ -158,10 +159,10 @@ function renderProblem(problem) {
 }
 
 function getZshPrompt() {
-  return `<span class="prompt-host">macbook-pro</span> <span class="prompt-dir">~</span> % `;
+  return `<span class="prompt-host">macbook-pro</span> <span class="prompt-dir">~</span> %`;
 }
 
-/* Interactive Terminal Logic */
+/* Interactive & Clean Terminal Stream */
 function appendPrompt() {
   const wrapper = document.createElement('div');
   wrapper.className = 'term-line prompt-wrap';
@@ -177,7 +178,9 @@ function appendPrompt() {
   input.addEventListener('keydown', async (e) => {
     if (e.key === 'Enter') {
       const cmd = input.value.trim();
-      input.outerHTML = `<span class="log-cmd">${escapeHtml(cmd)}</span>`; // lock text
+      
+      // Convert active prompt line to static text
+      wrapper.innerHTML = `${getZshPrompt()} <span class="log-cmd">${escapeHtml(cmd)}</span>`;
       
       if (cmd === '') {
         appendPrompt();
@@ -188,7 +191,10 @@ function appendPrompt() {
         await executeCode();
       } else {
         const cmdName = cmd.split(' ')[0];
-        termLogStream.innerHTML += `<div class="term-line text-tertiary">zsh: command not found: ${escapeHtml(cmdName)}</div>`;
+        const errorLine = document.createElement('div');
+        errorLine.className = 'term-line text-tertiary';
+        errorLine.textContent = `zsh: command not found: ${cmdName}`;
+        termLogStream.appendChild(errorLine);
         appendPrompt();
       }
       scrollToBottom();
@@ -219,54 +225,77 @@ async function executeCode() {
 }
 
 function renderTerminalResults(result) {
-  let output = "";
-
-  // 1. Always output standard print() logs first
+  // 1. Output print() stdout directly without extra spacing
   if (result.stdout) {
-    output += `<div class="term-line">${escapeHtml(result.stdout)}</div>`;
-  }
-  if (result.stderr) {
-    output += `<div class="term-line log-fail">${escapeHtml(result.stderr)}</div>`;
+    const cleanStdout = result.stdout.replace(/\n$/, '');
+    const div = document.createElement('div');
+    div.className = 'term-line';
+    div.textContent = cleanStdout;
+    termLogStream.appendChild(div);
   }
 
-  // 2. Output Test Cases OR Graceful Function Warning
+  // 2. Output python tracebacks
+  if (result.stderr) {
+    const cleanStderr = result.stderr.replace(/\n$/, '');
+    const div = document.createElement('div');
+    div.className = 'term-line log-fail';
+    div.textContent = cleanStderr;
+    termLogStream.appendChild(div);
+  }
+
+  // 3. Pytest-Style Structured Test Cases Output
   if (result.func_found === false) {
-    output += `
-      <div class="term-line" style="color: var(--traffic-yellow); margin-top: 8px;">
-        <i class="ph-fill ph-warning-circle"></i> Test Evaluation Skipped: Required function '${currentProblem.functionName}' was not defined.
-      </div>
-    `;
+    const div = document.createElement('div');
+    div.className = 'term-line log-fail';
+    div.textContent = `pytest: error: function '${currentProblem.functionName}' not defined in main.py`;
+    termLogStream.appendChild(div);
   } else if (result.results && result.results.length > 0) {
     let passedCount = 0;
     
-    // Formatting margin
-    output += `<div class="term-line text-tertiary" style="margin-top:8px;">--- Test Suite Evaluation ---</div>`;
+    // Header line
+    const header = document.createElement('div');
+    header.className = 'term-line text-tertiary';
+    header.style.marginTop = '4px';
+    header.textContent = 'rootdir: /workspace, configfile: pytest.ini';
+    termLogStream.appendChild(header);
 
     result.results.forEach((tc) => {
       if (tc.passed) passedCount++;
 
-      const statusIcon = tc.passed ? `<span class="log-pass">✔ PASS</span>` : `<span class="log-fail">✘ FAIL</span>`;
-      const timeInfo = `<span class="text-tertiary">(${tc.time_ms.toFixed(2)}ms)</span>`;
-      output += `<div class="term-line">${statusIcon} Case ${tc.id} ${timeInfo}</div>`;
+      const statusHtml = tc.passed ? `<span class="log-pass">PASSED</span>` : `<span class="log-fail">FAILED</span>`;
+      const timeHtml = `<span class="text-tertiary">[${tc.time_ms.toFixed(2)}ms]</span>`;
+
+      const row = document.createElement('div');
+      row.className = 'term-line test-row';
+      row.innerHTML = `<span>test_cases.py::case_${tc.id}</span><span class="dots"></span>${statusHtml} ${timeHtml}`;
+      termLogStream.appendChild(row);
 
       if (!tc.passed) {
-        output += `
-          <div class="term-line text-tertiary" style="padding-left: 20px;">
-            Expected: ${JSON.stringify(tc.expected)} | Output: ${JSON.stringify(tc.actual)}
-          </div>
-        `;
+        const failDetail = document.createElement('div');
+        failDetail.className = 'term-line log-fail';
+        failDetail.textContent = `  E   AssertionError: expected ${JSON.stringify(tc.expected)}, got ${JSON.stringify(tc.actual)}`;
+        termLogStream.appendChild(failDetail);
       }
     });
 
-    const isAllPassed = passedCount === result.results.length;
-    if(isAllPassed) {
-        showToast("All Tests Passed", "ph-check-circle");
+    const total = result.results.length;
+    const failedCount = total - passedCount;
+    
+    const summary = document.createElement('div');
+    summary.className = `term-line ${failedCount === 0 ? 'log-pass' : 'log-fail'}`;
+    summary.style.marginTop = '4px';
+    summary.textContent = failedCount === 0 
+      ? `===== ${total} passed in 0.04s =====` 
+      : `===== ${failedCount} failed, ${passedCount} passed in 0.05s =====`;
+    termLogStream.appendChild(summary);
+
+    if (failedCount === 0) {
+      showToast("All Tests Passed", "ph-check-circle");
     } else {
-        showToast("Tests Failed", "ph-warning-circle");
+      showToast(`${failedCount} Test(s) Failed`, "ph-warning-circle");
     }
   }
 
-  termLogStream.innerHTML += output;
   appendPrompt();
   scrollToBottom();
 }
