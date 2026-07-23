@@ -18,7 +18,6 @@ import traceback
 def __run_test_suite__(user_code, func_name, tests_json):
     out = io.StringIO()
     err = io.StringIO()
-    
     sys.stdout = out
     sys.stderr = err
 
@@ -28,7 +27,7 @@ def __run_test_suite__(user_code, func_name, tests_json):
         exec(user_code, namespace)
 
         if func_name not in namespace:
-            raise Exception(f"SignatureError: Function '{func_name}' not defined in source.")
+            raise Exception(f"NameError: Function '{func_name}' is not defined.")
 
         func = namespace[func_name]
         tests = json.loads(tests_json)

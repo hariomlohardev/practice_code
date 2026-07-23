@@ -3,12 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Python Dev Studio</title>
-  
-  <!-- Fonts: Inter for headings, Cascadia Code / JetBrains Mono for Code & Terminal -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>macOS Python Studio</title>
   
   <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -35,111 +30,111 @@
 </head>
 <body>
 
-  <!-- Startup Loader -->
+  <!-- Startup Loader (Mac Style) -->
   <div id="loading-screen">
-    <div class="startup-wrapper">
-      <div class="status-indicator">
-        <span class="status-dot dot-blue pulsing"></span>
-        <span class="startup-text">Initializing Python Kernel...</span>
+    <div class="mac-loader">
+      <i class="ph ph-command"></i>
+      <div class="mac-progress-track">
+        <div class="mac-progress-fill"></div>
       </div>
-      <div class="progress-bar-track">
-        <div class="progress-bar-fill"></div>
-      </div>
+      <span class="startup-text">Starting Python Kernel...</span>
     </div>
   </div>
 
-  <!-- Workspace Container -->
-  <div id="app" class="hidden">
+  <!-- Mac Window Wrapper -->
+  <div id="mac-window" class="hidden">
     
-    <!-- Left Pane: Problem Description & Markdown -->
-    <div class="pane left-pane">
-      <div class="pane-header-hidden">
-        <div class="header-content-collapsible">
-          <span class="status-dot dot-cyan"></span>
-          <span class="doc-tag">MARKDOWN SPECIFICATION</span>
-          <button id="btn-next-problem" class="flat-action-btn" title="Load New Problem">
-            <i class="ph ph-arrows-clockwise"></i>
-          </button>
-        </div>
+    <!-- Mac Title Bar -->
+    <div class="mac-title-bar">
+      <div class="mac-traffic-lights">
+        <div class="mac-btn mac-close"></div>
+        <div class="mac-btn mac-min"></div>
+        <div class="mac-btn mac-max"></div>
       </div>
-      
-      <div class="markdown-body">
-        <h1 id="problem-title" class="title-heading">...</h1>
-        <div id="problem-desc" class="desc-content">...</div>
-        
-        <div class="border-divider"></div>
-        
-        <div id="problem-examples" class="examples-block"></div>
-        
-        <div class="target-spec">
-          <span class="status-dot dot-amber"></span>
-          <span>Target Constraint: &le; <span id="target-time">0</span>ms per test evaluation</span>
-        </div>
+      <div class="mac-window-title">
+        <i class="ph ph-folder"></i> python-practice — solution.py
       </div>
+      <div class="mac-spacer"></div>
     </div>
 
-    <!-- Right Pane: Code Editor + Windows Terminal -->
-    <div class="pane right-pane">
+    <!-- Workspace Container -->
+    <div class="workspace">
       
-      <!-- Editor Top Navigation (Flat, Collapsible on Hover) -->
-      <div class="editor-navbar-collapsible">
-        <div class="nav-visible-trigger">
-          <span class="status-dot dot-green"></span>
-          <span class="file-name">solution.py</span>
-          <span class="keyboard-hint">Ctrl+Space for autocomplete</span>
-        </div>
-        <div class="nav-hidden-actions">
-          <button id="btn-reset" class="flat-action-btn" title="Reset Code Template">
-            <i class="ph ph-arrow-counter-clockwise"></i>
-          </button>
-          <button id="btn-run" class="flat-action-btn active-brand" title="Run & Test Code">
-            <i class="ph ph-play"></i>
+      <!-- Left Pane: Problem Description -->
+      <div class="pane left-pane">
+        <div class="pane-toolbar blur-header">
+          <span class="doc-tag">MARKDOWN</span>
+          <button id="btn-next-problem" class="mac-icon-btn" title="Next Problem">
+            <i class="ph ph-arrow-right"></i>
           </button>
         </div>
-      </div>
-      
-      <!-- CodeMirror Editor Container -->
-      <div class="editor-wrapper">
-        <textarea id="code-editor"></textarea>
-      </div>
-
-      <!-- Windows Terminal Area -->
-      <div class="win-terminal">
-        <!-- Windows Terminal Title Bar -->
-        <div class="win-terminal-bar">
-          <div class="win-terminal-tabs">
-            <div class="win-tab active">
-              <i class="ph ph-terminal-window tab-icon"></i>
-              <span>Windows PowerShell</span>
-              <span class="status-dot dot-blue mini"></span>
-            </div>
-          </div>
-          <div class="win-controls">
-            <span class="win-btn win-min">&#8212;</span>
-            <span class="win-btn win-max">&#9633;</span>
-            <span class="win-btn win-close">&#10005;</span>
-          </div>
-        </div>
-
-        <!-- Terminal Output Screen -->
-        <div id="terminal-screen" class="win-terminal-body">
-          <div class="terminal-line text-muted">Windows PowerShell [Version 10.0.22631.3880]</div>
-          <div class="terminal-line text-muted">(c) Microsoft Corporation. All rights reserved.</div>
-          <div class="terminal-line">&nbsp;</div>
-          <div id="terminal-log-stream">
-            <div class="terminal-line prompt-line">
-              <span class="prompt-path">PS C:\workspace\python&gt;</span>
-              <span class="text-muted">Awaiting code execution...</span>
-            </div>
+        
+        <div class="markdown-body">
+          <h1 id="problem-title" class="title-heading">...</h1>
+          <div id="problem-desc" class="desc-content">...</div>
+          
+          <div class="border-divider"></div>
+          
+          <div id="problem-examples" class="examples-block"></div>
+          
+          <div class="target-spec">
+            <i class="ph ph-timer"></i>
+            <span>Target: &le; <span id="target-time">0</span>ms / test</span>
           </div>
         </div>
       </div>
 
+      <!-- Right Pane: VS Code Editor + Mac Terminal -->
+      <div class="pane right-pane">
+        
+        <!-- Editor Top Navigation -->
+        <div class="pane-toolbar blur-header editor-header">
+          <div class="tabs-group">
+            <div class="mac-tab active">
+              <i class="ph ph-file-code" style="color: #519aba;"></i> solution.py
+            </div>
+          </div>
+          <div class="editor-actions">
+            <button id="btn-reset" class="mac-icon-btn" title="Reset Code">
+              <i class="ph ph-arrow-counter-clockwise"></i>
+            </button>
+            <button id="btn-run" class="mac-action-btn" title="Run & Test Code">
+              <i class="ph ph-play-fill"></i> Run Code
+            </button>
+          </div>
+        </div>
+        
+        <!-- CodeMirror Editor Container -->
+        <div class="editor-wrapper">
+          <textarea id="code-editor"></textarea>
+        </div>
+
+        <!-- Mac zsh Terminal Area -->
+        <div class="mac-terminal">
+          <div class="terminal-header">
+            <span>Terminal</span>
+            <div class="term-actions">
+              <i class="ph ph-plus"></i>
+              <i class="ph ph-trash"></i>
+              <i class="ph ph-x"></i>
+            </div>
+          </div>
+
+          <!-- Terminal Output Screen -->
+          <div id="terminal-screen" class="terminal-body">
+            <div class="terminal-line text-muted">Last login: <span id="login-time"></span> on ttys001</div>
+            <div id="terminal-log-stream">
+              <div class="terminal-line prompt-line">
+                <span class="prompt-user">dev@macbook-pro</span> <span class="prompt-dir">python-practice</span> % <span class="text-muted">_</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
-
   </div>
 
-  <!-- Application Scripts -->
   <script src="mock-ai.js"></script>
   <script src="engine.js"></script>
   <script src="app.js"></script>
