@@ -1,0 +1,48 @@
+/* Terminal Panel Styling */
+.terminal-panel {
+  height: 38%; border-top: 0.5px solid var(--border); display: flex; flex-direction: column; cursor: text;
+}
+
+.panel-header {
+  height: 36px; display: flex; align-items: center; padding: 0 16px;
+  background: var(--bg-secondary); border-bottom: 0.5px solid var(--border); gap: 16px; cursor: default;
+}
+.tab {
+  font-size: 12px; color: var(--text-tertiary); font-weight: 500; cursor: pointer;
+  height: 100%; display: flex; align-items: center; gap: 6px; position: relative; letter-spacing: 0.3px;
+  transition: color var(--duration-fast);
+}
+.tab:hover { color: var(--text-secondary); }
+.tab.active { color: var(--text-primary); font-weight: 600; }
+.tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--accent); border-radius: 2px 2px 0 0; }
+
+.spacer { flex: 1; }
+.action-icon { color: var(--text-tertiary); cursor: pointer; font-size: 15px; transition: color 0.15s; }
+.action-icon:hover { color: var(--text-primary); }
+
+.terminal-content {
+  flex: 1; padding: 10px 14px; overflow-y: auto;
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.45;
+  color: var(--text-primary); letter-spacing: -0.01em;
+}
+
+.term-line { margin: 0; padding: 0; white-space: pre-wrap; word-break: break-all; }
+.text-tertiary { color: var(--text-tertiary); }
+
+.prompt-wrap { display: flex; align-items: baseline; gap: 6px; margin: 0; padding: 0; }
+.prompt-host { color: var(--term-green); font-weight: 600; }
+.prompt-dir { color: var(--term-cyan); font-weight: 600; }
+
+.log-cmd { color: var(--text-primary); font-weight: 500; }
+.log-pass { color: var(--term-green); font-weight: 600; }
+.log-fail { color: var(--term-red); font-weight: 600; }
+.log-pip { color: var(--accent); }
+
+.term-input {
+  background: transparent; border: none; color: var(--text-primary);
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.45;
+  outline: none; flex: 1; padding: 0; margin: 0; caret-color: var(--accent);
+}
+
+.test-row { display: flex; align-items: center; gap: 8px; margin: 1px 0; }
+.test-row .dots { flex: 1; border-bottom: 1px dotted rgba(255, 255, 255, 0.15); height: 0.8em; }

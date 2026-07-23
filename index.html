@@ -23,7 +23,11 @@
   <!-- Pyodide Core -->
   <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
   
-  <link rel="stylesheet" href="style.css" />
+  <!-- Modular Styles -->
+  <link rel="stylesheet" href="styles/theme.css" />
+  <link rel="stylesheet" href="styles/chrome.css" />
+  <link rel="stylesheet" href="styles/editor.css" />
+  <link rel="stylesheet" href="styles/terminal.css" />
 </head>
 <body>
 
@@ -51,7 +55,7 @@
         <button id="btn-close-settings" class="icon-btn"><i class="ph ph-x"></i></button>
       </div>
 
-      <!-- Settings Body (Sidebar + Content) -->
+      <!-- Settings Body -->
       <div class="mac-settings-body">
         
         <!-- Sidebar Navigation -->
@@ -80,38 +84,40 @@
         <!-- Detail Content Area -->
         <div class="settings-content">
           
-          <!-- Panel 1: Credentials (Google Exclusive) -->
+          <!-- Panel 1: Credentials -->
           <div id="sec-creds" class="settings-panel">
             <h2 class="panel-title">AI Credentials</h2>
 
-            <!-- Google Support Star Banner -->
             <div class="google-notice-card">
               <i class="ph-fill ph-star notice-star"></i>
               <div class="notice-text">
-                <strong>Google Gemini Only</strong>
-                <span>Python Studio currently supports Google models exclusively.</span>
+                <strong>Google Gemini Support</strong>
+                <span>Enter your API key and any model name from Google AI Studio.</span>
               </div>
             </div>
 
-            <!-- API Key Field -->
+            <!-- API Key Input -->
             <div class="form-group">
               <label class="form-label">Google Gemini API Key</label>
               <input type="password" id="setting-api-key" class="mac-input" placeholder="AIzaSy..." autocomplete="off" />
               <span id="key-error-msg" class="form-error hidden">Invalid Google API Key. Please check and try again.</span>
             </div>
 
-            <!-- Custom Apple Model Selector List -->
+            <!-- Custom Model Name Input -->
             <div class="form-group">
-              <div class="picker-header">
-                <label class="form-label">Select Google Model</label>
-
-              </div>
-              
+              <label class="form-label">Model Name / Identifier</label>
+              <input type="text" id="setting-model-input" class="mac-input" placeholder="gemini-3.6-flash" autocomplete="off" />
+              <span class="text-tertiary" style="font-size: 11px; margin-top: 2px;">
+                Default: <code>gemini-3.6-flash</code>. You can type any model string from Google AI Studio.
+              </span>
+            </div>
+            <!-- Preset Model Picker List -->
+            <div class="form-group">
+              <label class="form-label">Quick Select Presets</label>
               <div id="model-picker-list" class="mac-model-picker">
                 <!-- Dynamically Populated Cards -->
               </div>
             </div>
-
           </div>
 
           <!-- Panel 2: Customize AI -->
@@ -143,18 +149,9 @@
               <span class="text-tertiary">Version 2.4.0 (Build 2026)</span>
             </div>
             <div class="mac-group-list">
-              <div class="mac-list-row">
-                <span>Python Engine</span>
-                <span class="text-tertiary">Pyodide v0.26.4 (WASM)</span>
-              </div>
-              <div class="mac-list-row">
-                <span>AI Provider</span>
-                <span class="text-tertiary">Google Gemini API</span>
-              </div>
-              <div class="mac-list-row">
-                <span>Architecture</span>
-                <span class="text-tertiary">Apple Silicon / Universal</span>
-              </div>
+              <div class="mac-list-row"><span>Python Engine</span><span class="text-tertiary">Pyodide v0.26.4 (WASM)</span></div>
+              <div class="mac-list-row"><span>AI Provider</span><span class="text-tertiary">Google Gemini API</span></div>
+              <div class="mac-list-row"><span>Architecture</span><span class="text-tertiary">Apple Silicon / Universal</span></div>
             </div>
           </div>
 
@@ -162,20 +159,13 @@
           <div id="sec-creator" class="settings-panel hidden">
             <h2 class="panel-title">Creator & Open Source</h2>
             <p class="body-text">Crafted with Apple Design Guidelines for high-efficiency browser Python development.</p>
-            
             <div class="mac-group-list" style="margin-top: 16px;">
               <a href="https://github.com" target="_blank" rel="noopener" class="mac-list-row link-row">
-                <div class="row-left">
-                  <i class="ph-bold ph-github-logo"></i>
-                  <span>GitHub Repository</span>
-                </div>
+                <div class="row-left"><i class="ph-bold ph-github-logo"></i><span>GitHub Repository</span></div>
                 <i class="ph ph-arrow-square-out text-tertiary"></i>
               </a>
               <a href="https://github.com" target="_blank" rel="noopener" class="mac-list-row link-row">
-                <div class="row-left">
-                  <i class="ph-bold ph-globe"></i>
-                  <span>GitHub Pages / Documentation</span>
-                </div>
+                <div class="row-left"><i class="ph-bold ph-globe"></i><span>GitHub Pages / Documentation</span></div>
                 <i class="ph ph-arrow-square-out text-tertiary"></i>
               </a>
             </div>
@@ -184,9 +174,45 @@
         </div>
       </div>
 
-      <!-- Modal Footer -->
       <div class="mac-modal-footer">
         <button id="btn-save-settings" class="btn btn-primary">Save Changes</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- macOS Jupy AI Chat Window -->
+  <div id="ai-modal" class="mac-modal-backdrop hidden">
+    <div class="mac-ai-window">
+      <div class="mac-modal-header">
+        <div class="mac-traffic-lights">
+          <div class="dot red" id="btn-close-ai-dot" title="Close"></div>
+        </div>
+        <div class="ai-header-title">
+          <i class="ph-fill ph-sparkle" style="color: var(--accent);"></i>
+          <span>Jupy AI Assistant</span>
+        </div>
+        <button id="btn-close-ai" class="icon-btn"><i class="ph ph-x"></i></button>
+      </div>
+
+      <div class="mac-ai-body">
+        <div class="ai-task-sidebar">
+          <div class="ai-sidebar-header">
+            <span class="section-caps">AI TASKS HISTORY</span>
+            <button id="btn-clear-chat" class="icon-btn" title="New Chat Session"><i class="ph ph-note-pencil"></i></button>
+          </div>
+          <div id="ai-task-history-list" class="ai-task-list"></div>
+        </div>
+
+        <div class="ai-chat-container">
+          <div id="ai-chat-messages" class="chat-messages-list"></div>
+          <div class="chat-input-wrapper">
+            <textarea id="ai-chat-input" class="chat-textarea" placeholder="Ask Jupy anything or say 'Give me a task'..." rows="1"></textarea>
+            <button id="btn-send-chat" class="btn-send" title="Send Message (Enter)">
+              <i class="ph-fill ph-arrow-up"></i>
+            </button>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -196,7 +222,6 @@
   <div class="desktop-environment">
     <div id="macos-app" class="macos-window hidden">
       
-      <!-- Top Bar -->
       <header class="top-bar drag-zone">
         <div class="top-bar-left">
           <div class="traffic-lights">
@@ -205,7 +230,6 @@
             <div class="dot green"></div>
           </div>
 
-          <!-- Top Navigation Action Icons -->
           <div class="top-bar-nav-btns">
             <button id="btn-files-toggle" class="top-icon-btn" title="Saved Files / Tasks"><i class="ph ph-folder-open"></i></button>
             <button id="btn-ai-toggle" class="top-icon-btn" title="AI Assistant"><i class="ph ph-sparkle"></i></button>
@@ -228,10 +252,7 @@
         </div>
       </header>
 
-      <!-- Main Layout -->
       <div class="app-layout">
-        
-        <!-- Sidebar -->
         <aside class="sidebar">
           <div class="sidebar-header">
             <span class="section-caps">SPECIFICATION</span>
@@ -253,15 +274,11 @@
           </div>
         </aside>
 
-        <!-- Main Content Area -->
         <main class="main-content">
-          
-          <!-- Code Editor -->
           <div class="editor-section">
             <textarea id="code-editor"></textarea>
           </div>
 
-          <!-- Bottom Panel: Terminal & Pytest Tabs -->
           <div class="terminal-panel">
             <div class="panel-header">
               <span class="tab active" id="tab-zsh"><i class="ph ph-terminal-window"></i> zsh</span>
@@ -272,22 +289,24 @@
             
             <div id="terminal-screen" class="terminal-content">
               <div class="term-line text-tertiary">Session started: <span id="login-time"></span> on ttys001</div>
-              <div id="terminal-log-stream">
-                <!-- Terminal stream -->
-              </div>
+              <div id="terminal-log-stream"></div>
             </div>
           </div>
-
         </main>
       </div>
+
     </div>
   </div>
 
-  <!-- Database & Scripts -->
-  <script src="db.js"></script>
-  <script src="python-intellisense.js"></script>
-  <script src="mock-ai.js"></script>
-  <script src="engine.js"></script>
-  <script src="app.js"></script>
+  <!-- Modular Scripts -->
+  <script src="js/db.js"></script>
+  <script src="js/jupy-ai.js"></script>
+  <script src="js/ai-ui.js"></script>
+  <script src="js/intellisense.js"></script>
+  <script src="js/mock-ai.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/terminal.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

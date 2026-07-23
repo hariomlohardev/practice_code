@@ -4,7 +4,7 @@ const MOCK_PROBLEMS = [
     description: "Given an array of integers <code>nums</code> and an integer <code>target</code>, return the indices of the two elements that add up to the target.<br><br>You may assume that each input has exactly one solution, and you may not use the same element twice.",
     functionName: "two_sum",
     targetTimeMs: 15.0,
-    boilerplate: "def two_sum(nums, target):\n    # Type here to see Rich IntelliSense\n    pass\n",
+    boilerplate: "def two_sum(nums, target):\n    # Type code here.\n    pass\n",
     examples: [
       "Input: nums = [2, 7, 11, 15], target = 9\nOutput: [0, 1]",
       "Input: nums = [3, 2, 4], target = 6\nOutput: [1, 2]"

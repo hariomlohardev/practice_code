@@ -1,0 +1,62 @@
+/* ==========================================================================
+   MACOS DESIGN SYSTEM TOKENS
+   ========================================================================== */
+:root {
+  --bg-primary: #1E1E1E;    
+  --bg-secondary: #2C2C2E;  
+  --bg-tertiary: #3A3A3C;   
+  --bg-vibrant: rgba(30, 30, 30, 0.75);
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #EBEBF5;
+  --text-tertiary: #8E8E93;
+
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.2);
+
+  /* Apple System Yellow Accent */
+  --accent: #FFD60A;       
+  --accent-hover: #FFDF33;
+  --accent-text: #1C1C1E; 
+  
+  --surface-hover: rgba(255, 255, 255, 0.08);
+
+  --shadow-sm: 0 0 0 0.5px rgba(0,0,0,0.1), 0 2px 5px rgba(0,0,0,0.2);
+  --shadow-md: 0 0 0 0.5px rgba(0,0,0,0.15), 0 8px 24px rgba(0,0,0,0.3);
+  --shadow-lg: 0 0 0 0.5px rgba(0,0,0,0.2), 0 20px 60px rgba(0,0,0,0.5);
+
+  --traffic-red: #FF5F57;
+  --traffic-yellow: #FEBC2E;
+  --traffic-green: #28C840;
+
+  --term-green: #32D74B;
+  --term-red: #FF453A;
+  --term-cyan: #64D2FF;
+
+  --ease-spring: cubic-bezier(0.25, 1, 0.5, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+
+  --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+  --font-mono: "SF Mono", "Menlo", "Monaco", monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-system);
+  font-size: 13px;
+  background: #000;
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.hidden { display: none !important; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.25); border: 2px solid transparent; background-clip: padding-box; }

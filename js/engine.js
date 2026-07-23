@@ -1,3 +1,6 @@
+/**
+ * Pyodide Python Engine & Package Manager
+ */
 class PythonEngine {
   constructor() { 
     this.pyodide = null; 
@@ -7,7 +10,6 @@ class PythonEngine {
   async init() {
     this.pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/" });
     
-    // Test Harness Python Wrapper
     const testRunnerCode = `
 import json, time, io, sys, traceback
 
@@ -55,9 +57,6 @@ def __run_test_suite__(user_code, func_name, tests_json):
     await this.pyodide.runPythonAsync(testRunnerCode);
   }
 
-  /**
-   * Install Python packages dynamically via Pyodide micropip
-   */
   async installPackage(pkgName, logCallback) {
     try {
       if (!this.micropipReady) {
