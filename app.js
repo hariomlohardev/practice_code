@@ -1,7 +1,6 @@
 const engine = new PythonEngine();
 let editor = null;
 let currentProblem = null;
-let activeTab = 'zsh'; // 'zsh' | 'pytest'
 
 const loadingScreen = document.getElementById('loading-screen');
 const appContainer = document.getElementById('macos-app');
@@ -92,7 +91,6 @@ async function initializeApp() {
     appendPrompt();
   });
 
-  // Terminal Tab Click Fix (Switching between zsh and pytest mode)
   tabZsh.addEventListener('click', () => switchTerminalTab('zsh'));
   tabPytest.addEventListener('click', () => switchTerminalTab('pytest'));
 
@@ -105,14 +103,12 @@ async function initializeApp() {
 }
 
 function switchTerminalTab(tabName) {
-  activeTab = tabName;
   if (tabName === 'zsh') {
     tabZsh.classList.add('active');
     tabPytest.classList.remove('active');
   } else {
     tabPytest.classList.add('active');
     tabZsh.classList.remove('active');
-    // Clicking Pytest Tab automatically triggers test execution
     triggerRunFromTerminal('pytest main.py');
   }
 }
@@ -166,6 +162,10 @@ function appendPrompt() {
       } else if (cmd === 'clear') {
         termLogStream.innerHTML = '';
         appendPrompt();
+      } else if (/^pip3?\s+install\s+([a-zA-Z0-9_\-]+)$/i.test(cmd)) {
+        const match = cmd.match(/^pip3?\s+install\s+([a-zA-Z0-9_\-]+)$/i);
+        const pkgName = match[1];
+        await handlePipInstall(pkgName);
       } else if (/^(python3?|pytest)(?:\s+main\.py)?$/.test(cmd) || cmd === './main.py') {
         await executeCode();
       } else {
@@ -181,13 +181,36 @@ function appendPrompt() {
   });
 }
 
+/**
+ * Executes pip install command inside Pyodide and updates IntelliSense
+ */
+async function handlePipInstall(pkgName) {
+  const logCallback = (msg) => {
+    const div = document.createElement('div');
+    div.className = 'term-line log-pip';
+    div.textContent = msg;
+    termLogStream.appendChild(div);
+    scrollToBottom();
+  };
+
+  const success = await engine.installPackage(pkgName, logCallback);
+  if (success) {
+    PythonIntelliSense.registerPackage(pkgName);
+    showToast(`Installed ${pkgName}`, "ph-package");
+  } else {
+    showToast(`Failed to install ${pkgName}`, "ph-warning-circle");
+  }
+
+  appendPrompt();
+  scrollToBottom();
+}
+
 function triggerRunFromTerminal(customCmd) {
   const activeInput = termLogStream.querySelector('.term-input');
   if (activeInput) {
     activeInput.value = customCmd || 'python3 main.py';
     activeInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
   } else {
-    // If input not available, create line directly
     const wrapper = document.createElement('div');
     wrapper.className = 'term-line prompt-wrap';
     wrapper.innerHTML = `${getZshPrompt()} <span class="log-cmd">${customCmd || 'python3 main.py'}</span>`;
@@ -211,7 +234,6 @@ async function executeCode() {
 }
 
 function renderTerminalResults(result) {
-  // 1. Standard stdout
   if (result.stdout) {
     const cleanStdout = result.stdout.replace(/\n$/, '');
     const div = document.createElement('div');
@@ -220,7 +242,6 @@ function renderTerminalResults(result) {
     termLogStream.appendChild(div);
   }
 
-  // 2. Error tracebacks
   if (result.stderr) {
     const cleanStderr = result.stderr.replace(/\n$/, '');
     const div = document.createElement('div');
@@ -229,7 +250,6 @@ function renderTerminalResults(result) {
     termLogStream.appendChild(div);
   }
 
-  // 3. Structured Pytest-style Test Evaluation
   if (result.func_found === false) {
     const div = document.createElement('div');
     div.className = 'term-line log-fail';

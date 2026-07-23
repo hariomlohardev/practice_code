@@ -1,8 +1,13 @@
 class PythonEngine {
-  constructor() { this.pyodide = null; }
+  constructor() { 
+    this.pyodide = null; 
+    this.micropipReady = false;
+  }
 
   async init() {
     this.pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/" });
+    
+    // Test Harness Python Wrapper
     const testRunnerCode = `
 import json, time, io, sys, traceback
 
@@ -15,10 +20,8 @@ def __run_test_suite__(user_code, func_name, tests_json):
 
     try:
         namespace = {}
-        # 1. Execute the code regardless, to capture print() statements
         exec(user_code, namespace)
         
-        # 2. Check if the required function exists for testing
         if func_name in namespace:
             func_found = True
             func = namespace[func_name]
@@ -50,6 +53,33 @@ def __run_test_suite__(user_code, func_name, tests_json):
     })
 `;
     await this.pyodide.runPythonAsync(testRunnerCode);
+  }
+
+  /**
+   * Install Python packages dynamically via Pyodide micropip
+   */
+  async installPackage(pkgName, logCallback) {
+    try {
+      if (!this.micropipReady) {
+        logCallback(`Initializing micropip package manager...`);
+        await this.pyodide.loadPackage("micropip");
+        this.micropipReady = true;
+      }
+
+      logCallback(`Collecting ${pkgName}...`);
+      logCallback(`Downloading ${pkgName} wheels...`);
+
+      const pyCode = `
+import micropip
+await micropip.install('${pkgName}')
+`;
+      await this.pyodide.runPythonAsync(pyCode);
+      logCallback(`Successfully installed ${pkgName}`);
+      return true;
+    } catch (err) {
+      logCallback(`ERROR: Could not install ${pkgName}: ${err.message}`);
+      return false;
+    }
   }
 
   async run(userCode, problemConfig) {
