@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Untitled.ipynb — PyBrowser</title>
+<link rel="stylesheet" href="../styles/theme.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css" />
+<link rel="stylesheet" href="notebook.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <a href="../index.html" class="back" title="Back to home">←</a>
+  <div class="title-block">
+    <input id="filename" class="filename-input" value="Untitled.ipynb" spellcheck="false" />
+    <span class="status" id="status">Loading Python runtime…</span>
+  </div>
+
+  <div class="spacer"></div>
+
+  <input type="file" id="file-input" accept=".ipynb" hidden />
+  <button class="btn" id="btn-open">Open .ipynb</button>
+  <button class="btn" id="btn-save">Save .ipynb</button>
+  <button class="btn" id="btn-restart" title="Clear all variables and start fresh">Restart runtime</button>
+  <button class="btn btn-primary" id="btn-run-all" disabled>Run all</button>
+</header>
+
+<main class="notebook" id="notebook">
+  <!-- cells are rendered here by notebook.js -->
+</main>
+
+<div class="add-cell-bottom">
+  <button class="add-cell-btn" id="btn-add-bottom">+ Code</button>
+</div>
+
+<footer class="hint-bar">
+  <span><kbd>Shift</kbd>+<kbd>Enter</kbd> run &amp; next</span>
+  <span><kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Enter</kbd> run in place</span>
+  <span><kbd>Alt</kbd>+<kbd>Enter</kbd> run &amp; insert below</span>
+  <span><kbd>Esc</kbd> then <kbd>A</kbd>/<kbd>B</kbd>/<kbd>D</kbd><kbd>D</kbd> insert above / below / delete</span>
+</footer>
+
+<template id="cell-template">
+  <div class="cell" tabindex="-1">
+    <div class="cell-gutter">
+      <button class="run-btn" title="Run cell">
+        <span class="run-icon">▶</span>
+      </button>
+      <div class="exec-count">[&nbsp;]</div>
+    </div>
+    <div class="cell-body">
+      <div class="cell-editor"></div>
+      <pre class="cell-output" hidden></pre>
+    </div>
+    <div class="cell-toolbar">
+      <button data-action="move-up" title="Move cell up">↑</button>
+      <button data-action="move-down" title="Move cell down">↓</button>
+      <button data-action="delete" title="Delete cell">🗑</button>
+    </div>
+  </div>
+</template>
+
+<template id="insert-bar-template">
+  <div class="insert-bar">
+    <button class="add-cell-btn add-cell-btn-inline">+ Code</button>
+  </div>
+</template>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
+<script src="../shared/pyodide-runtime.js"></script>
+<script src="notebook.js"></script>
+</body>
+</html>
