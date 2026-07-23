@@ -10,10 +10,10 @@ const toastContainer = document.getElementById('toast-container');
 const btnRun = document.getElementById('btn-run');
 const btnReset = document.getElementById('btn-reset');
 const btnNext = document.getElementById('btn-next-problem');
+const btnClearTerm = document.getElementById('btn-clear-term');
 
 document.getElementById('login-time').innerText = new Date().toLocaleTimeString([], {weekday: 'short', hour: '2-digit', minute:'2-digit'});
 
-/* --- RICH INTELLISENSE DICTIONARY --- */
 const PYTHON_INTELLISENSE = [
   { text: "print", type: "function", icon: "ph-function", desc: "Print values to stream" },
   { text: "len", type: "function", icon: "ph-function", desc: "Return length of object" },
@@ -41,8 +41,6 @@ async function initializeApp() {
     autoCloseBrackets: true,
     extraKeys: {
       "Ctrl-Space": triggerRichIntelliSense,
-      "Cmd-Enter": handleExecute,
-      "Ctrl-Enter": handleExecute, 
       "Tab": function(cm) {
         if (cm.somethingSelected()) cm.indentSelection("add");
         else cm.replaceSelection("    ", "end");
@@ -50,17 +48,14 @@ async function initializeApp() {
     }
   });
 
-  // Global Shortcut Listener for Cmd/Ctrl + Enter from anywhere
+  // Global Keyboard Shortcuts (Works from anywhere)
   document.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
-      if (!btnRun.disabled) {
-        handleExecute();
-      }
+      if (!btnRun.disabled) triggerRunFromTerminal();
     }
   });
 
-  // Trigger Rich Custom Suggestions on type
   editor.on("inputRead", function(cm, change) {
     if (change.origin === "+input" && /^[a-zA-Z_]*$/.test(change.text[0])) {
       triggerRichIntelliSense(cm);
@@ -77,12 +72,13 @@ async function initializeApp() {
         appContainer.classList.remove('hidden');
         editor.refresh();
         showToast("Engine Warmed Up", "ph-check-circle");
+        appendPrompt(); // Initialize interactive terminal
     }, 300);
   } catch (err) {
     showToast("Engine Error: " + err.message, "ph-warning-circle");
   }
 
-  btnRun.addEventListener('click', handleExecute);
+  btnRun.addEventListener('click', triggerRunFromTerminal);
   
   btnReset.addEventListener('click', () => {
     editor.setValue(currentProblem.boilerplate);
@@ -93,12 +89,23 @@ async function initializeApp() {
     currentProblem = getRandomAIProblem();
     renderProblem(currentProblem);
     editor.setValue(currentProblem.boilerplate);
-    clearTerminal();
+    termLogStream.innerHTML = '';
+    appendPrompt();
     showToast("Loaded Next Problem", "ph-folder-open");
+  });
+
+  btnClearTerm.addEventListener('click', () => {
+    termLogStream.innerHTML = '';
+    appendPrompt();
+  });
+
+  // Focus terminal input when clicking anywhere in the terminal body
+  document.querySelector('.terminal-content').addEventListener('click', () => {
+    const input = termLogStream.querySelector('.term-input');
+    if (input) input.focus();
   });
 }
 
-/* --- CUSTOM RICH HINT RENDERING --- */
 function triggerRichIntelliSense(cm) {
   const cursor = cm.getCursor();
   const token = cm.getTokenAt(cursor);
@@ -154,26 +161,54 @@ function getZshPrompt() {
   return `<span class="prompt-host">macbook-pro</span> <span class="prompt-dir">~</span> % `;
 }
 
-window.clearTerminal = function() {
-  termLogStream.innerHTML = `
-    <div class="term-line prompt-wrap">
-      ${getZshPrompt()} <span class="text-tertiary">_</span>
-    </div>
+/* Interactive Terminal Logic */
+function appendPrompt() {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'term-line prompt-wrap';
+  wrapper.innerHTML = `
+    ${getZshPrompt()} 
+    <input type="text" class="term-input" autocomplete="off" spellcheck="false" autofocus>
   `;
+  termLogStream.appendChild(wrapper);
+  
+  const input = wrapper.querySelector('.term-input');
+  input.focus();
+  
+  input.addEventListener('keydown', async (e) => {
+    if (e.key === 'Enter') {
+      const cmd = input.value.trim();
+      input.outerHTML = `<span class="log-cmd">${escapeHtml(cmd)}</span>`; // lock text
+      
+      if (cmd === '') {
+        appendPrompt();
+      } else if (cmd === 'clear') {
+        termLogStream.innerHTML = '';
+        appendPrompt();
+      } else if (/^python3?(?:\s+main\.py)?$/.test(cmd) || cmd === './main.py') {
+        await executeCode();
+      } else {
+        const cmdName = cmd.split(' ')[0];
+        termLogStream.innerHTML += `<div class="term-line text-tertiary">zsh: command not found: ${escapeHtml(cmdName)}</div>`;
+        appendPrompt();
+      }
+      scrollToBottom();
+    }
+  });
 }
 
-async function handleExecute() {
+function triggerRunFromTerminal() {
+  const activeInput = termLogStream.querySelector('.term-input');
+  if (activeInput) {
+    activeInput.value = 'python3 main.py';
+    activeInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+  }
+}
+
+async function executeCode() {
   const code = editor.getValue();
   
   btnRun.disabled = true;
   btnRun.innerHTML = `<i class="ph-fill ph-spinner-gap" style="animation: spin 1s linear infinite;"></i> Running...`;
-
-  termLogStream.innerHTML += `
-    <div class="term-line prompt-wrap">
-      ${getZshPrompt()} <span class="log-cmd">python3 main.py</span>
-    </div>
-  `;
-  scrollToBottom();
 
   const result = await engine.run(code, currentProblem);
   
@@ -186,12 +221,26 @@ async function handleExecute() {
 function renderTerminalResults(result) {
   let output = "";
 
+  // 1. Always output standard print() logs first
+  if (result.stdout) {
+    output += `<div class="term-line">${escapeHtml(result.stdout)}</div>`;
+  }
   if (result.stderr) {
     output += `<div class="term-line log-fail">${escapeHtml(result.stderr)}</div>`;
   }
 
-  if (result.results && result.results.length > 0) {
+  // 2. Output Test Cases OR Graceful Function Warning
+  if (result.func_found === false) {
+    output += `
+      <div class="term-line" style="color: var(--traffic-yellow); margin-top: 8px;">
+        <i class="ph-fill ph-warning-circle"></i> Test Evaluation Skipped: Required function '${currentProblem.functionName}' was not defined.
+      </div>
+    `;
+  } else if (result.results && result.results.length > 0) {
     let passedCount = 0;
+    
+    // Formatting margin
+    output += `<div class="term-line text-tertiary" style="margin-top:8px;">--- Test Suite Evaluation ---</div>`;
 
     result.results.forEach((tc) => {
       if (tc.passed) passedCount++;
@@ -211,28 +260,14 @@ function renderTerminalResults(result) {
 
     const isAllPassed = passedCount === result.results.length;
     if(isAllPassed) {
-        output += `<div class="term-line log-pass">✨ Execution Success</div>`;
         showToast("All Tests Passed", "ph-check-circle");
     } else {
-        output += `<div class="term-line log-fail">⚠ ${result.results.length - passedCount} Tests Failed</div>`;
         showToast("Tests Failed", "ph-warning-circle");
     }
   }
 
-  if (result.stdout) {
-    output += `
-      <div class="term-line text-tertiary">[stdout]</div>
-      <div class="term-line">${escapeHtml(result.stdout)}</div>
-    `;
-  }
-
-  output += `
-    <div class="term-line prompt-wrap" style="margin-top: 8px;">
-      ${getZshPrompt()} <span class="text-tertiary">_</span>
-    </div>
-  `;
-
   termLogStream.innerHTML += output;
+  appendPrompt();
   scrollToBottom();
 }
 

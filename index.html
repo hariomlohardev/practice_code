@@ -27,7 +27,6 @@
 </head>
 <body>
 
-  <!-- Loading Overlay -->
   <div id="loading-screen" class="macos-overlay">
     <div class="loader-box">
       <div class="spinner"></div>
@@ -35,16 +34,12 @@
     </div>
   </div>
 
-  <!-- Native macOS Toast Container -->
   <div id="toast-container"></div>
 
-  <!-- Desktop Environment -->
   <div class="desktop-environment">
-    
-    <!-- Native macOS App Window -->
     <div id="macos-app" class="macos-window hidden">
       
-      <!-- Top Bar: Global Actions & Traffic Lights -->
+      <!-- Top Bar -->
       <header class="top-bar drag-zone">
         <div class="traffic-lights">
           <div class="dot red"></div>
@@ -70,7 +65,7 @@
       <!-- Main Layout -->
       <div class="app-layout">
         
-        <!-- Sidebar Navigation/Context (WIDER) -->
+        <!-- Sidebar -->
         <aside class="sidebar">
           <div class="sidebar-header">
             <span class="section-caps">SPECIFICATION</span>
@@ -82,12 +77,9 @@
           <div class="sidebar-content">
             <h1 id="problem-title" class="title-1">...</h1>
             <p id="problem-desc" class="body-text">...</p>
-            
             <div class="divider"></div>
-            
             <span class="section-caps">TEST CASES</span>
             <div id="problem-examples" class="examples-grid"></div>
-            
             <div class="info-callout">
               <i class="ph-fill ph-timer"></i> 
               <span>Target: &le; <span id="target-time">0</span>ms</span>
@@ -103,21 +95,19 @@
             <textarea id="code-editor"></textarea>
           </div>
 
-          <!-- Bottom Panel: Native Terminal Console -->
+          <!-- Bottom Panel: Interactive Terminal -->
           <div class="terminal-panel">
             <div class="panel-header">
               <span class="tab active">Console</span>
               <span class="tab">Test Output</span>
               <div class="spacer"></div>
-              <i class="ph ph-trash action-icon" onclick="clearTerminal()" title="Clear Console"></i>
+              <i class="ph ph-trash action-icon" id="btn-clear-term" title="Clear Console"></i>
             </div>
             
             <div id="terminal-screen" class="terminal-content">
               <div class="term-line text-tertiary">Session started: <span id="login-time"></span></div>
               <div id="terminal-log-stream">
-                <div class="term-line prompt-wrap">
-                  <span class="prompt-host">macbook-pro</span> <span class="prompt-dir">~</span> % <span class="text-tertiary">_</span>
-                </div>
+                <!-- Terminal stream goes here -->
               </div>
             </div>
           </div>
