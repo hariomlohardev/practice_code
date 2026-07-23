@@ -15,6 +15,7 @@
  */
 const PyRuntime = (() => {
   const PYODIDE_VERSION = "v314.0.2";
+  
   const PYODIDE_CDN = `https://cdn.jsdelivr.net/pyodide/${PYODIDE_VERSION}/full/`;
 
   let pyodide = null;
