@@ -1,16 +1,40 @@
 const engine = new PythonEngine();
 let editor = null;
 let currentProblem = null;
+let autoSaveTimer = null;
 
+// DOM Elements
 const loadingScreen = document.getElementById('loading-screen');
 const appContainer = document.getElementById('macos-app');
 const termLogStream = document.getElementById('terminal-log-stream');
 const toastContainer = document.getElementById('toast-container');
 
+// Top Bar Action Buttons
 const btnRun = document.getElementById('btn-run');
 const btnReset = document.getElementById('btn-reset');
 const btnNext = document.getElementById('btn-next-problem');
 const btnClearTerm = document.getElementById('btn-clear-term');
+
+const btnSettingsToggle = document.getElementById('btn-settings-toggle');
+const btnAiToggle = document.getElementById('btn-ai-toggle');
+const btnFilesToggle = document.getElementById('btn-files-toggle');
+
+// Modal Elements
+const settingsModal = document.getElementById('settings-modal');
+const btnCloseSettings = document.getElementById('btn-close-settings');
+const btnSaveSettings = document.getElementById('btn-save-settings');
+
+const tabBtnCreds = document.getElementById('tab-btn-creds');
+const tabBtnCustom = document.getElementById('tab-btn-custom');
+const secCreds = document.getElementById('sec-creds');
+const secCustom = document.getElementById('sec-custom');
+
+// Form Inputs
+const inputModel = document.getElementById('setting-model');
+const inputApiKey = document.getElementById('setting-api-key');
+const inputComplexity = document.getElementById('setting-complexity');
+const inputField = document.getElementById('setting-field');
+const inputTopics = document.getElementById('setting-topics');
 
 const tabZsh = document.getElementById('tab-zsh');
 const tabPytest = document.getElementById('tab-pytest');
@@ -18,10 +42,17 @@ const tabPytest = document.getElementById('tab-pytest');
 document.getElementById('login-time').innerText = new Date().toLocaleTimeString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' });
 
 async function initializeApp() {
-  currentProblem = getRandomAIProblem();
+  // 1. Check DB for previous session state
+  const savedState = AppDB.getActiveState();
+  if (savedState && savedState.problem) {
+    currentProblem = savedState.problem;
+  } else {
+    currentProblem = getRandomAIProblem();
+  }
+
   renderProblem(currentProblem);
 
-  // Initialize CodeMirror with Custom Python IntelliSense Engine
+  // 2. Initialize CodeMirror Editor
   editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
     mode: "python",
     theme: "nord",
@@ -36,6 +67,21 @@ async function initializeApp() {
         else cm.replaceSelection("    ", "end");
       }
     }
+  });
+
+  // Load code from DB if exists
+  if (savedState && savedState.code) {
+    editor.setValue(savedState.code);
+  } else {
+    editor.setValue(currentProblem.boilerplate);
+  }
+
+  // 3. Auto-save code on typing (Debounced)
+  editor.on("change", () => {
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(() => {
+      saveCurrentStateToDB();
+    }, 1000);
   });
 
   // Global Keyboard Shortcut: Cmd/Ctrl + Enter
@@ -53,8 +99,6 @@ async function initializeApp() {
     }
   });
 
-  editor.setValue(currentProblem.boilerplate);
-
   try {
     await engine.init();
     loadingScreen.style.opacity = '0';
@@ -69,11 +113,12 @@ async function initializeApp() {
     showToast("Engine Error: " + err.message, "ph-warning-circle");
   }
 
-  // Action Bindings
+  // Bind Buttons
   btnRun.addEventListener('click', triggerRunFromTerminal);
   
   btnReset.addEventListener('click', () => {
     editor.setValue(currentProblem.boilerplate);
+    saveCurrentStateToDB();
     showToast("Editor Reset", "ph-arrow-counter-clockwise");
   });
 
@@ -83,6 +128,7 @@ async function initializeApp() {
     editor.setValue(currentProblem.boilerplate);
     termLogStream.innerHTML = '';
     appendPrompt();
+    saveCurrentStateToDB();
     showToast("Loaded Next Problem", "ph-folder-open");
   });
 
@@ -94,12 +140,81 @@ async function initializeApp() {
   tabZsh.addEventListener('click', () => switchTerminalTab('zsh'));
   tabPytest.addEventListener('click', () => switchTerminalTab('pytest'));
 
+  // Modal Controls
+  btnSettingsToggle.addEventListener('click', openSettingsModal);
+  btnCloseSettings.addEventListener('click', closeSettingsModal);
+  btnSaveSettings.addEventListener('click', handleSaveSettings);
+
+  btnAiToggle.addEventListener('click', () => showToast("AI Assistant Active", "ph-sparkle"));
+  btnFilesToggle.addEventListener('click', () => showToast("Task History Loaded", "ph-folder-open"));
+
+  // Settings Tabs
+  tabBtnCreds.addEventListener('click', () => switchModalTab('creds'));
+  tabBtnCustom.addEventListener('click', () => switchModalTab('custom'));
+
   document.querySelector('.terminal-content').addEventListener('click', (e) => {
     if (e.target.tagName !== 'INPUT') {
       const input = termLogStream.querySelector('.term-input');
       if (input) input.focus();
     }
   });
+}
+
+function saveCurrentStateToDB() {
+  if (!editor || !currentProblem) return;
+  AppDB.saveActiveState({
+    code: editor.getValue(),
+    problem: currentProblem,
+    updatedAt: new Date().toISOString()
+  });
+}
+
+/* --- SETTINGS MODAL LOGIC --- */
+function openSettingsModal() {
+  const creds = AppDB.getCredentials();
+  const custom = AppDB.getAICustomization();
+
+  inputModel.value = creds.model || 'gpt-4o';
+  inputApiKey.value = creds.apiKey || '';
+  inputComplexity.value = custom.complexity || 'intermediate';
+  inputField.value = custom.field || '';
+  inputTopics.value = custom.topics || '';
+
+  settingsModal.classList.remove('hidden');
+}
+
+function closeSettingsModal() {
+  settingsModal.classList.add('hidden');
+}
+
+function switchModalTab(tab) {
+  if (tab === 'creds') {
+    tabBtnCreds.classList.add('active');
+    tabBtnCustom.classList.remove('active');
+    secCreds.classList.remove('hidden');
+    secCustom.classList.add('hidden');
+  } else {
+    tabBtnCustom.classList.add('active');
+    tabBtnCreds.classList.remove('active');
+    secCustom.classList.remove('hidden');
+    secCreds.classList.add('hidden');
+  }
+}
+
+function handleSaveSettings() {
+  AppDB.saveCredentials({
+    model: inputModel.value,
+    apiKey: inputApiKey.value
+  });
+
+  AppDB.saveAICustomization({
+    complexity: inputComplexity.value,
+    field: inputField.value,
+    topics: inputTopics.value
+  });
+
+  closeSettingsModal();
+  showToast("Settings Saved", "ph-check-circle");
 }
 
 function switchTerminalTab(tabName) {
@@ -181,9 +296,6 @@ function appendPrompt() {
   });
 }
 
-/**
- * Executes pip install command inside Pyodide and updates IntelliSense
- */
 async function handlePipInstall(pkgName) {
   const logCallback = (msg) => {
     const div = document.createElement('div');

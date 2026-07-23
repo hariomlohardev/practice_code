@@ -38,16 +38,82 @@
   <!-- Toast Container -->
   <div id="toast-container"></div>
 
+  <!-- macOS Settings Sheet Modal -->
+  <div id="settings-modal" class="mac-modal-backdrop hidden">
+    <div class="mac-modal-sheet">
+      <div class="mac-modal-header">
+        <span class="mac-modal-title">Settings</span>
+        <button id="btn-close-settings" class="icon-btn"><i class="ph ph-x"></i></button>
+      </div>
+      
+      <!-- Segmented Control Tabs -->
+      <div class="mac-segmented-control">
+        <button class="seg-btn active" id="tab-btn-creds">Credentials</button>
+        <button class="seg-btn" id="tab-btn-custom">Customize AI</button>
+      </div>
+
+      <!-- Tab 1: Credentials -->
+      <div id="sec-creds" class="modal-section">
+        <div class="form-group">
+          <label class="form-label">AI Model Provider</label>
+          <select id="setting-model" class="mac-select">
+            <option value="gpt-4o">OpenAI GPT-4o</option>
+            <option value="claude-3-5-sonnet">Anthropic Claude 3.5 Sonnet</option>
+            <option value="gemini-1-5-pro">Google Gemini 1.5 Pro</option>
+            <option value="custom">Custom Endpoint / Local LLM</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">API Key</label>
+          <input type="password" id="setting-api-key" class="mac-input" placeholder="sk-..." autocomplete="off" />
+        </div>
+      </div>
+
+      <!-- Tab 2: Customize AI -->
+      <div id="sec-custom" class="modal-section hidden">
+        <div class="form-group">
+          <label class="form-label">Coding Complexity</label>
+          <select id="setting-complexity" class="mac-select">
+            <option value="beginner">Beginner (Detailed comments & basics)</option>
+            <option value="intermediate" selected>Intermediate (Standard / Clean)</option>
+            <option value="advanced">Advanced (Production-grade, optimized)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Domain / Field</label>
+          <input type="text" id="setting-field" class="mac-input" placeholder="e.g. Data Science, Web Backend, Machine Learning" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Interests & Preferred Libraries</label>
+          <input type="text" id="setting-topics" class="mac-input" placeholder="e.g. NumPy, Asyncio, Pandas, FastAPI" />
+        </div>
+      </div>
+
+      <div class="mac-modal-footer">
+        <button id="btn-save-settings" class="btn btn-primary">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Desktop Environment -->
   <div class="desktop-environment">
     <div id="macos-app" class="macos-window hidden">
       
       <!-- Top Bar -->
       <header class="top-bar drag-zone">
-        <div class="traffic-lights">
-          <div class="dot red"></div>
-          <div class="dot yellow"></div>
-          <div class="dot green"></div>
+        <div class="top-bar-left">
+          <div class="traffic-lights">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+          </div>
+
+          <!-- Top Navigation Action Icons -->
+          <div class="top-bar-nav-btns">
+            <button id="btn-files-toggle" class="top-icon-btn" title="Saved Files / Tasks"><i class="ph ph-folder-open"></i></button>
+            <button id="btn-ai-toggle" class="top-icon-btn" title="AI Assistant"><i class="ph ph-sparkle"></i></button>
+            <button id="btn-settings-toggle" class="top-icon-btn" title="Settings"><i class="ph ph-gear"></i></button>
+          </div>
         </div>
         
         <div class="top-bar-center">
@@ -120,7 +186,8 @@
     </div>
   </div>
 
-  <!-- Dedicated IntelliSense Engine -->
+  <!-- Database & Scripts -->
+  <script src="db.js"></script>
   <script src="python-intellisense.js"></script>
   <script src="mock-ai.js"></script>
   <script src="engine.js"></script>
