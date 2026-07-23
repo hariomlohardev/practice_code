@@ -1,13 +1,13 @@
 const MOCK_PROBLEMS = [
   {
-    title: "1. Two Sum (Target Matching)",
-    description: "Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.<br><br>You may assume that each input would have <strong>exactly one solution</strong>, and you may not use the same element twice.",
+    title: "Target Sum Indices",
+    description: "Given an array of integers <code>nums</code> and an integer <code>target</code>, return the indices of the two elements that add up to the target.<br><br>You may assume that each input has exactly one solution, and you may not use the same element twice.",
     functionName: "two_sum",
     targetTimeMs: 15.0,
-    boilerplate: "def two_sum(nums, target):\n    # Write your solution below\n    seen = {}\n    for i, num in enumerate(nums):\n        diff = target - num\n        if diff in seen:\n            return [seen[diff], i]\n        seen[num] = i\n    return []\n",
+    boilerplate: "def two_sum(nums, target):\n    # Write code here. Use Ctrl+Space for suggestions.\n    pass\n",
     examples: [
-      "Input: nums = [2,7,11,15], target = 9\nOutput: [0,1]\nExplanation: nums[0] + nums[1] == 9, return [0, 1].",
-      "Input: nums = [3,2,4], target = 6\nOutput: [1,2]"
+      "Input: nums = [2, 7, 11, 15], target = 9\nOutput: [0, 1]\nExplanation: nums[0] + nums[1] == 9",
+      "Input: nums = [3, 2, 4], target = 6\nOutput: [1, 2]"
     ],
     testCases: [
       { inputs: [[2, 7, 11, 15], 9], expected: [0, 1] },
@@ -16,11 +16,11 @@ const MOCK_PROBLEMS = [
     ]
   },
   {
-    title: "2. Valid Palindrome Verification",
-    description: "A phrase is a palindrome if, after converting all uppercase letters into lowercase letters and removing all non-alphanumeric characters, it reads the same forward and backward.<br><br>Return <code>True</code> if it is a palindrome, or <code>False</code> otherwise.",
+    title: "Alphanumeric Palindrome",
+    description: "Determine whether a given string is a palindrome after converting all uppercase characters to lowercase and removing all non-alphanumeric characters.",
     functionName: "is_palindrome",
     targetTimeMs: 10.0,
-    boilerplate: "import re\n\ndef is_palindrome(s: str) -> bool:\n    # Clean and check palindrome\n    cleaned = re.sub(r'[^a-zA-Z0-9]', '', s).lower()\n    return cleaned == cleaned[::-1]\n",
+    boilerplate: "import re\n\ndef is_palindrome(s):\n    # Write code here. Auto-completes brackets & quotes.\n    pass\n",
     examples: [
       "Input: s = \"A man, a plan, a canal: Panama\"\nOutput: True",
       "Input: s = \"race a car\"\nOutput: False"
@@ -34,6 +34,5 @@ const MOCK_PROBLEMS = [
 ];
 
 function getRandomAIProblem() {
-  const randomIndex = Math.floor(Math.random() * MOCK_PROBLEMS.length);
-  return MOCK_PROBLEMS[randomIndex];
+  return MOCK_PROBLEMS[Math.floor(Math.random() * MOCK_PROBLEMS.length)];
 }

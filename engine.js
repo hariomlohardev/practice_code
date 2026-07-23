@@ -8,7 +8,6 @@ class PythonEngine {
       indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/"
     });
     
-    // Python test runner wrapper executing tests and measuring time
     const testRunnerCode = `
 import json
 import time
@@ -29,7 +28,7 @@ def __run_test_suite__(user_code, func_name, tests_json):
         exec(user_code, namespace)
 
         if func_name not in namespace:
-            raise Exception(f"Function '{func_name}' was not found in global namespace.")
+            raise Exception(f"SignatureError: Function '{func_name}' not defined in source.")
 
         func = namespace[func_name]
         tests = json.loads(tests_json)
@@ -50,7 +49,6 @@ def __run_test_suite__(user_code, func_name, tests_json):
                 "passed": passed,
                 "actual": actual,
                 "expected": expected,
-                "inputs": inputs,
                 "time_ms": round(exec_time_ms, 4)
             })
 
@@ -71,9 +69,7 @@ def __run_test_suite__(user_code, func_name, tests_json):
 
   async run(userCode, problemConfig) {
     try {
-      // Automatically detect and download imported python packages
       await this.pyodide.loadPackagesFromImports(userCode);
-      
       const testsJson = JSON.stringify(problemConfig.testCases);
       const testSuiteRunner = this.pyodide.globals.get("__run_test_suite__");
       

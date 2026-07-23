@@ -3,32 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Python Developer Practice Environment</title>
+  <title>Python Dev Studio</title>
   
-  <!-- Fonts: Inter & JetBrains Mono -->
+  <!-- Fonts: Inter for headings, Cascadia Code / JetBrains Mono for Code & Terminal -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   
   <!-- CodeMirror CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-ocean.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
   
-  <!-- CodeMirror Core & Languages -->
+  <!-- CodeMirror Core & Python Mode -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
   
-  <!-- CodeMirror Addons (Auto-close brackets, hint/autocomplete) -->
+  <!-- CodeMirror Addons: Auto-Close Brackets, Match Brackets, Auto-Complete Hints -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/anyword-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/python-hint.min.js"></script>
   
-  <!-- Pyodide Engine -->
+  <!-- Pyodide Core -->
   <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
   
   <link rel="stylesheet" href="style.css">
@@ -36,114 +36,110 @@
 <body>
 
   <!-- Startup Loader -->
-  <div id="loading-screen" class="startup-overlay">
-    <div class="loader-box">
-      <div class="terminal-spinner"></div>
-      <div class="loader-text">
-        <h3>Setting up Python Runtime</h3>
-        <p>Loading WASM environment & packages...</p>
+  <div id="loading-screen">
+    <div class="startup-wrapper">
+      <div class="status-indicator">
+        <span class="status-dot dot-blue pulsing"></span>
+        <span class="startup-text">Initializing Python Kernel...</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill"></div>
       </div>
     </div>
   </div>
 
-  <!-- Main App Shell -->
-  <div id="app" class="app-container hidden">
+  <!-- Workspace Container -->
+  <div id="app" class="hidden">
     
-    <!-- LEFT PANE: Problem Description (Markdown Style) -->
-    <main class="pane left-pane">
-      <header class="pane-header">
-        <div class="header-tag">
-          <span class="status-dot"></span>
-          <span>AI Problem Set</span>
-        </div>
-        <button id="btn-next" class="icon-btn" title="Load New Problem">
-          <i class="ph ph-shuffle"></i>
-        </button>
-      </header>
-
-      <article class="markdown-body">
-        <h1 id="problem-title">Loading...</h1>
-        <div id="problem-desc" class="description-block"></div>
-        
-        <hr class="border-divider">
-        
-        <h3>Examples</h3>
-        <div id="problem-examples" class="examples-list"></div>
-        
-        <div class="efficiency-box">
-          <div class="eff-header">
-            <i class="ph ph-timer"></i>
-            <span>Efficiency Constraint</span>
-          </div>
-          <div class="eff-value">Max Execution: <strong id="target-time">0</strong> ms</div>
-        </div>
-      </article>
-    </main>
-
-    <!-- RIGHT PANE: Code Editor & Windows Terminal -->
-    <section class="pane right-pane">
-      
-      <!-- Editor Toolbar -->
-      <div class="editor-header">
-        <div class="tab-group">
-          <span class="tab active">
-            <i class="ph ph-file-py"></i>
-            <span>solution.py</span>
-          </span>
-        </div>
-        <div class="action-buttons">
-          <button id="btn-reset" class="flat-btn" title="Reset Code">
-            <i class="ph ph-arrow-counter-clockwise"></i>
-          </button>
-          <button id="btn-run" class="flat-btn active-accent" title="Run & Test (Ctrl+Enter)">
-            <i class="ph ph-play"></i>
-            <span>Run Code</span>
+    <!-- Left Pane: Problem Description & Markdown -->
+    <div class="pane left-pane">
+      <div class="pane-header-hidden">
+        <div class="header-content-collapsible">
+          <span class="status-dot dot-cyan"></span>
+          <span class="doc-tag">MARKDOWN SPECIFICATION</span>
+          <button id="btn-next-problem" class="flat-action-btn" title="Load New Problem">
+            <i class="ph ph-arrows-clockwise"></i>
           </button>
         </div>
       </div>
+      
+      <div class="markdown-body">
+        <h1 id="problem-title" class="title-heading">...</h1>
+        <div id="problem-desc" class="desc-content">...</div>
+        
+        <div class="border-divider"></div>
+        
+        <div id="problem-examples" class="examples-block"></div>
+        
+        <div class="target-spec">
+          <span class="status-dot dot-amber"></span>
+          <span>Target Constraint: &le; <span id="target-time">0</span>ms per test evaluation</span>
+        </div>
+      </div>
+    </div>
 
-      <!-- Editor Window -->
+    <!-- Right Pane: Code Editor + Windows Terminal -->
+    <div class="pane right-pane">
+      
+      <!-- Editor Top Navigation (Flat, Collapsible on Hover) -->
+      <div class="editor-navbar-collapsible">
+        <div class="nav-visible-trigger">
+          <span class="status-dot dot-green"></span>
+          <span class="file-name">solution.py</span>
+          <span class="keyboard-hint">Ctrl+Space for autocomplete</span>
+        </div>
+        <div class="nav-hidden-actions">
+          <button id="btn-reset" class="flat-action-btn" title="Reset Code Template">
+            <i class="ph ph-arrow-counter-clockwise"></i>
+          </button>
+          <button id="btn-run" class="flat-action-btn active-brand" title="Run & Test Code">
+            <i class="ph ph-play"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- CodeMirror Editor Container -->
       <div class="editor-wrapper">
         <textarea id="code-editor"></textarea>
       </div>
 
-      <!-- WINDOWS TERMINAL -->
+      <!-- Windows Terminal Area -->
       <div class="win-terminal">
-        <!-- Windows Terminal Window Header -->
-        <div class="win-term-header">
-          <div class="win-term-tabs">
-            <div class="win-term-tab active">
-              <i class="ph ph-terminal-window"></i>
+        <!-- Windows Terminal Title Bar -->
+        <div class="win-terminal-bar">
+          <div class="win-terminal-tabs">
+            <div class="win-tab active">
+              <i class="ph ph-terminal-window tab-icon"></i>
               <span>Windows PowerShell</span>
-              <i class="ph ph-x close-tab"></i>
+              <span class="status-dot dot-blue mini"></span>
             </div>
           </div>
-          <div class="win-term-controls">
-            <span class="win-ctrl" title="Minimize">&#x2015;</span>
-            <span class="win-ctrl" title="Maximize">&#x25A2;</span>
-            <span class="win-ctrl close-btn" title="Close">&#x2715;</span>
+          <div class="win-controls">
+            <span class="win-btn win-min">&#8212;</span>
+            <span class="win-btn win-max">&#9633;</span>
+            <span class="win-btn win-close">&#10005;</span>
           </div>
         </div>
 
-        <!-- Terminal Output Area -->
-        <div id="terminal-body" class="win-term-body">
-          <div class="win-term-banner">
-            Windows PowerShell<br>
-            Copyright (C) Microsoft Corporation. All rights reserved.<br><br>
-            Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows<br>
-          </div>
-          <div id="terminal-stream" class="terminal-stream"></div>
-          <div class="prompt-line">
-            <span class="ps-prompt">PS C:\environment\python&gt;</span>
-            <span class="ps-cursor"></span>
+        <!-- Terminal Output Screen -->
+        <div id="terminal-screen" class="win-terminal-body">
+          <div class="terminal-line text-muted">Windows PowerShell [Version 10.0.22631.3880]</div>
+          <div class="terminal-line text-muted">(c) Microsoft Corporation. All rights reserved.</div>
+          <div class="terminal-line">&nbsp;</div>
+          <div id="terminal-log-stream">
+            <div class="terminal-line prompt-line">
+              <span class="prompt-path">PS C:\workspace\python&gt;</span>
+              <span class="text-muted">Awaiting code execution...</span>
+            </div>
           </div>
         </div>
       </div>
 
-    </section>
+    </div>
 
   </div>
 
+  <!-- Application Scripts -->
   <script src="mock-ai.js"></script>
   <script src="engine.js"></script>
   <script src="app.js"></script>

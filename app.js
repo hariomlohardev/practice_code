@@ -2,38 +2,45 @@ const engine = new PythonEngine();
 let editor = null;
 let currentProblem = null;
 
-// DOM Handles
+// UI References
 const loadingScreen = document.getElementById('loading-screen');
 const appContainer = document.getElementById('app');
-const terminalStream = document.getElementById('terminal-stream');
-const terminalBody = document.getElementById('terminal-body');
+const termLogStream = document.getElementById('terminal-log-stream');
 const btnRun = document.getElementById('btn-run');
 const btnReset = document.getElementById('btn-reset');
-const btnNext = document.getElementById('btn-next');
+const btnNext = document.getElementById('btn-next-problem');
 
 async function initializeApp() {
   currentProblem = getRandomAIProblem();
   renderProblem(currentProblem);
 
-  // Initialize CodeMirror with Auto-Close Brackets & Auto-Suggest
+  // Initialize CodeMirror with Auto-Close Brackets & Auto-Suggestions
   editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
     mode: "python",
-    theme: "material-ocean",
+    theme: "dracula",
     lineNumbers: true,
-    autoCloseBrackets: true, // Auto closes (), {}, [], "", ''
-    matchBrackets: true,
     indentUnit: 4,
-    tabSize: 4,
+    matchBrackets: true,
+    autoCloseBrackets: true, // Auto closes (), {}, "", [], ''
     extraKeys: {
-      "Ctrl-Space": "autocomplete",
-      "Ctrl-Enter": () => handleRunCode()
+      "Ctrl-Space": "autocomplete", // Manual trigger
+      "Tab": function(cm) {
+        if (cm.somethingSelected()) {
+          cm.indentSelection("add");
+        } else {
+          cm.replaceSelection("    ", "end");
+        }
+      }
     }
   });
 
-  // Enable Auto-suggestions while typing letters
+  // Auto-trigger suggestions on typing alphanumeric characters or dot
   editor.on("inputRead", function(cm, change) {
-    if (change.origin !== "+delete" && /[a-zA-Z_]/.test(change.text[0])) {
-      CodeMirror.commands.autocomplete(cm, null, { completeSingle: false });
+    if (change.origin === "+input") {
+      const text = change.text[0];
+      if (/^[a-zA-Z_.]*$/.test(text) && text.length > 0) {
+        cm.showHint({ completeSingle: false });
+      }
     }
   });
 
@@ -42,24 +49,21 @@ async function initializeApp() {
   try {
     await engine.init();
     
-    loadingScreen.style.opacity = '0';
-    setTimeout(() => {
-      loadingScreen.classList.add('hidden');
-      appContainer.classList.remove('hidden');
-      editor.refresh();
-    }, 500);
+    loadingScreen.style.display = 'none';
+    appContainer.classList.remove('hidden');
+    editor.refresh();
   } catch (err) {
-    alert("Engine setup failed: " + err.message);
+    alert("Error loading Python Kernel: " + err.message);
   }
 
-  // Bind Listeners
-  btnRun.addEventListener('click', handleRunCode);
+  // Action Handlers
+  btnRun.addEventListener('click', handleExecute);
   btnReset.addEventListener('click', () => editor.setValue(currentProblem.boilerplate));
   btnNext.addEventListener('click', () => {
     currentProblem = getRandomAIProblem();
     renderProblem(currentProblem);
     editor.setValue(currentProblem.boilerplate);
-    terminalStream.innerHTML = '';
+    clearTerminal();
   });
 }
 
@@ -68,95 +72,116 @@ function renderProblem(problem) {
   document.getElementById('problem-desc').innerHTML = problem.description;
   document.getElementById('target-time').innerText = problem.targetTimeMs;
 
-  const examplesContainer = document.getElementById('problem-examples');
-  examplesContainer.innerHTML = problem.examples.map(ex => 
-    `<div class="example-item">${ex.replace(/\n/g, '<br>')}</div>`
+  const examplesBlock = document.getElementById('problem-examples');
+  examplesBlock.innerHTML = problem.examples.map(ex => 
+    `<div class="example-box">${ex.replace(/\n/g, '<br>')}</div>`
   ).join('');
 }
 
-async function handleRunCode() {
-  const code = editor.getValue();
-  
-  btnRun.disabled = true;
-  btnRun.innerHTML = `<i class="ph ph-spinner ph-spin"></i> Running...`;
+function clearTerminal() {
+  termLogStream.innerHTML = `
+    <div class="terminal-line prompt-line">
+      <span class="prompt-path">PS C:\\workspace\\python&gt;</span>
+      <span class="text-muted">Awaiting code execution...</span>
+    </div>
+  `;
+}
 
-  // Write command run prompt to Windows Terminal
-  appendTerminalLine(`<span class="ps-prompt">PS C:\\environment\\python&gt;</span> python -m pytest solution.py`);
-  appendTerminalLine(`<span style="color:#64748b;">[+] Running test suite execution...</span>`);
+async function handleExecute() {
+  const code = editor.getValue();
+  btnRun.disabled = true;
+
+  // Render PowerShell execution line
+  termLogStream.innerHTML = `
+    <div class="terminal-line prompt-line">
+      <span class="prompt-path">PS C:\\workspace\\python&gt;</span>
+      <span class="log-run">python -m unittest solution.py</span>
+    </div>
+    <div class="terminal-line text-muted">Executing test harness against Pyodide kernel...</div>
+    <div class="terminal-line">&nbsp;</div>
+  `;
 
   const result = await engine.run(code, currentProblem);
-
   btnRun.disabled = false;
-  btnRun.innerHTML = `<i class="ph ph-play"></i> <span>Run Code</span>`;
 
   renderTerminalResults(result);
 }
 
-function appendTerminalLine(htmlContent) {
-  const line = document.createElement('div');
-  line.innerHTML = htmlContent;
-  terminalStream.appendChild(line);
-  terminalBody.scrollTop = terminalBody.scrollHeight;
-}
-
 function renderTerminalResults(result) {
-  let streamHtml = `<div class="term-suite">`;
+  let streamHtml = termLogStream.innerHTML;
 
-  // Render Stderr Error Tracebacks if any
   if (result.stderr) {
-    streamHtml += `<div style="color: var(--status-fail); white-space: pre-wrap;">${result.stderr}</div>`;
+    streamHtml += `<div class="terminal-line log-fail">${escapeHtml(result.stderr)}</div>`;
   }
 
-  // Render Test Stream
   if (result.results && result.results.length > 0) {
     let passedCount = 0;
-    let totalTime = 0;
 
-    result.results.forEach(tc => {
-      totalTime += tc.time_ms;
-      if (tc.passed) passedCount++;
+    result.results.forEach((tc) => {
+      const isPassed = tc.passed;
+      if (isPassed) passedCount++;
 
-      const statusDot = tc.passed ? `<span class="dot dot-pass"></span>` : `<span class="dot dot-fail"></span>`;
-      const statusTag = tc.passed ? `<span class="tag-pass">PASSED</span>` : `<span class="tag-fail">FAILED</span>`;
+      const dotClass = isPassed ? "dot-green" : "dot-red";
+      const statusLabel = isPassed ? `<span class="log-pass">PASSED</span>` : `<span class="log-fail">FAILED</span>`;
+      const timeInfo = `<span class="log-warn">${tc.time_ms.toFixed(2)}ms</span>`;
 
       streamHtml += `
-        <div class="term-line">
-          ${statusDot}
-          <span>test_case_${tc.id}</span>
-          <span>........................</span>
-          ${statusTag}
-          <span style="color:#64748b;">(${tc.time_ms}ms)</span>
+        <div class="terminal-line">
+          <span class="status-dot ${dotClass}"></span>
+          <span> Test ${tc.id}: </span>
+          ${statusLabel}
+          <span class="text-muted"> in ${timeInfo}</span>
         </div>
       `;
 
-      if (!tc.passed) {
+      if (!isPassed) {
         streamHtml += `
-          <div class="term-detail">
-            Input: ${JSON.stringify(tc.inputs)} | Expected: ${JSON.stringify(tc.expected)} | Got: ${JSON.stringify(tc.actual)}
+          <div class="terminal-line text-muted" style="padding-left: 18px;">
+            Expected: ${JSON.stringify(tc.expected)} | Got: ${JSON.stringify(tc.actual)}
           </div>
         `;
       }
     });
 
-    // Render Stdout prints if any
-    if (result.stdout) {
-      streamHtml += `<div class="term-stdout"><strong>Standard Output:</strong><br>${result.stdout.trim().replace(/\n/g, '<br>')}</div>`;
-    }
+    const isAllPassed = passedCount === result.results.length;
+    const summaryDot = isAllPassed ? "dot-green" : "dot-red";
+    const summaryStatus = isAllPassed ? `<span class="log-pass">OK (All test cases passed)</span>` : `<span class="log-fail">FAIL (${result.results.length - passedCount} failed)</span>`;
 
-    // Summary Line
-    const allPassed = passedCount === result.results.length;
-    const summaryColor = allPassed ? 'var(--status-pass)' : 'var(--status-fail)';
-    
     streamHtml += `
-      <div class="term-summary">
-        Summary: <strong style="color:${summaryColor}">${passedCount}/${result.results.length} Passed</strong> 
-        in <strong>${totalTime.toFixed(2)}ms</strong>
+      <div class="terminal-line">&nbsp;</div>
+      <div class="terminal-line">--------------------------------------------------</div>
+      <div class="terminal-line">
+        <span class="status-dot ${summaryDot}"></span>
+        <span> Test Summary: ${summaryStatus}</span>
       </div>
     `;
   }
 
-  streamHtml += `</div>`;
-  appendTerminalLine(streamHtml);
+  if (result.stdout) {
+    streamHtml += `
+      <div class="terminal-line">&nbsp;</div>
+      <div class="terminal-line text-muted">[Stdout Logs]:</div>
+      <div class="terminal-line">${escapeHtml(result.stdout)}</div>
+    `;
+  }
+
+  streamHtml += `
+    <div class="terminal-line">&nbsp;</div>
+    <div class="terminal-line prompt-line">
+      <span class="prompt-path">PS C:\\workspace\\python&gt;</span>
+      <span class="status-dot dot-blue mini pulsing"></span>
+    </div>
+  `;
+
+  termLogStream.innerHTML = streamHtml;
+
+  // Auto scroll terminal to bottom
+  const termBody = document.getElementById('terminal-screen');
+  termBody.scrollTop = termBody.scrollHeight;
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 window.addEventListener('DOMContentLoaded', initializeApp);
