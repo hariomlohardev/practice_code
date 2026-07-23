@@ -1,87 +1,500 @@
-/* Desktop Environment & Window Chrome */
+/* ==========================================================================
+   MACOS WINDOW CHROME & DESKTOP ENVIRONMENT
+   ========================================================================== */
 .desktop-environment {
-  width: 100vw; height: 100vh;
-  display: flex; align-items: center; justify-content: center;
+  width: 100vw; 
+  height: 100vh;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
   background: radial-gradient(circle at center, #232332 0%, #000000 100%);
   padding: 1.5rem; 
 }
 
 .macos-window {
-  width: 100%; height: 100%;
+  width: 100%; 
+  height: 100%;
   border-radius: 12px;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
   background: var(--bg-primary);
-  display: flex; flex-direction: column;
+  display: flex; 
+  flex-direction: column;
 }
 
+/* ==========================================================================
+   TOP BAR (GLOBAL ACTIONS & TRAFFIC LIGHTS)
+   ========================================================================== */
 .top-bar {
-  height: 52px; display: flex; align-items: center; justify-content: space-between;
+  height: 52px;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between;
   background: var(--bg-vibrant);
   backdrop-filter: saturate(180%) blur(24px);
   -webkit-backdrop-filter: saturate(180%) blur(24px);
   border-bottom: 0.5px solid var(--border);
-  padding: 0 16px; z-index: 20;
+  padding: 0 16px;
+  z-index: 20;
 }
 
-.top-bar-left { display: flex; align-items: center; gap: 16px; }
-.traffic-lights { display: flex; gap: 8px; width: 60px; }
-.dot { width: 12px; height: 12px; border-radius: 50%; box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.15); cursor: pointer; }
+.top-bar-left { 
+  display: flex; 
+  align-items: center; 
+  gap: 16px; 
+}
+
+.traffic-lights { 
+  display: flex; 
+  gap: 8px; 
+  width: 60px; 
+}
+
+.dot { 
+  width: 12px; 
+  height: 12px; 
+  border-radius: 50%; 
+  box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.15); 
+  cursor: pointer; 
+}
 .dot.red { background: var(--traffic-red); }
 .dot.yellow { background: var(--traffic-yellow); }
 .dot.green { background: var(--traffic-green); }
 
-.top-bar-nav-btns { display: flex; align-items: center; gap: 4px; }
+.top-bar-nav-btns { 
+  display: flex; 
+  align-items: center; 
+  gap: 4px; 
+}
+
 .top-icon-btn {
-  background: transparent; border: none; color: var(--text-tertiary);
-  font-size: 16px; padding: 5px 8px; border-radius: 6px; cursor: pointer;
+  background: transparent; 
+  border: none; 
+  color: var(--text-tertiary);
+  font-size: 16px; 
+  padding: 5px 8px; 
+  border-radius: 6px; 
+  cursor: pointer;
   transition: all var(--duration-fast) var(--ease-spring);
 }
-.top-icon-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
-.top-icon-btn:active { transform: scale(0.92); }
-
-.top-bar-center { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 13px; color: var(--text-secondary); }
-.top-bar-actions { display: flex; gap: 10px; align-items: center; }
-
-.btn {
-  height: 28px; padding: 0 14px; border-radius: 6px;
-  font-family: var(--font-system); font-size: 12px; font-weight: 600;
-  display: flex; align-items: center; gap: 6px; cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-spring);
-  border: 0.5px solid transparent;
+.top-icon-btn:hover { 
+  background: var(--surface-hover); 
+  color: var(--text-primary); 
 }
-.btn-secondary { background: rgba(255,255,255,0.08); color: var(--text-primary); border-color: var(--border); box-shadow: var(--shadow-sm); }
-.btn-secondary:hover { background: rgba(255,255,255,0.15); }
+.top-icon-btn:active { 
+  transform: scale(0.92); 
+}
 
-.btn-primary { background: var(--accent); color: var(--accent-text); box-shadow: 0 2px 8px rgba(255, 214, 10, 0.2); }
-.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
-.btn-primary:active { transform: scale(0.96); }
+.top-bar-center {
+  display: flex; 
+  align-items: center; 
+  gap: 8px;
+  font-weight: 500; 
+  font-size: 13px; 
+  color: var(--text-secondary);
+}
 
-.kbd {
-  display: inline-flex; align-items: center; padding: 2px 6px; font-size: 11px;
-  font-family: var(--font-system); background: rgba(0,0,0,0.15);
-  border-radius: 4px; opacity: 0.8; margin-left: 4px; font-weight: 500;
+.top-bar-actions { 
+  display: flex; 
+  gap: 10px; 
+  align-items: center; 
 }
 
 /* ==========================================================================
-   SETTINGS WINDOW & MODAL
+   BUTTONS & CONTROLS
    ========================================================================== */
-.mac-modal-backdrop {
-  position: fixed; inset: 0; z-index: 500;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  display: flex; align-items: center; justify-content: center;
-  transition: opacity var(--duration-normal) var(--ease-spring);
+.btn {
+  height: 28px; 
+  padding: 0 14px; 
+  border-radius: 6px;
+  font-family: var(--font-system); 
+  font-size: 12px; 
+  font-weight: 600;
+  display: flex; 
+  align-items: center; 
+  gap: 6px; 
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-spring);
+  border: 0.5px solid transparent;
 }
 
-.mac-settings-window {
-  width: 700px; height: 520px;
+.btn-secondary {
+  background: rgba(255,255,255,0.08); 
+  color: var(--text-primary);
+  border-color: var(--border); 
+  box-shadow: var(--shadow-sm);
+}
+.btn-secondary:hover { 
+  background: rgba(255,255,255,0.15); 
+}
+
+.btn-primary {
+  background: var(--accent); 
+  color: var(--accent-text);
+  box-shadow: 0 2px 8px rgba(255, 214, 10, 0.2);
+}
+.btn-primary:hover { 
+  background: var(--accent-hover); 
+  transform: translateY(-1px); 
+}
+.btn-primary:active { 
+  transform: scale(0.96); 
+}
+
+.kbd {
+  display: inline-flex; 
+  align-items: center; 
+  padding: 2px 6px; 
+  font-size: 11px;
+  font-family: var(--font-system); 
+  background: rgba(0,0,0,0.15);
+  border-radius: 4px; 
+  opacity: 0.8; 
+  margin-left: 4px; 
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   SIDEBAR & LEFT PROBLEM PANE
+   ========================================================================== */
+.app-layout { 
+  display: flex; 
+  flex: 1; 
+  overflow: hidden; 
+}
+
+.sidebar {
+  width: 380px; 
+  flex-shrink: 0;
+  background: var(--bg-vibrant);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border-right: 0.5px solid var(--border);
+  display: flex; 
+  flex-direction: column;
+}
+
+.sidebar-header { 
+  padding: 16px 20px; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+}
+.section-caps { 
+  font-size: 11px; 
+  font-weight: 600; 
+  color: var(--text-tertiary); 
+  letter-spacing: 0.04em; 
+}
+
+.icon-btn {
+  background: transparent; 
+  border: none; 
+  color: var(--text-tertiary);
+  cursor: pointer; 
+  font-size: 18px; 
+  border-radius: 6px; 
+  padding: 4px;
+  transition: all var(--duration-fast) var(--ease-spring);
+}
+.icon-btn:hover { 
+  background: var(--surface-hover); 
+  color: var(--text-primary); 
+}
+.icon-btn:active { 
+  transform: scale(0.9); 
+}
+
+.sidebar-content { 
+  padding: 0 20px 24px; 
+  overflow-y: auto; 
+}
+.title-1 { 
+  font-size: 24px; 
+  font-weight: 600; 
+  color: var(--text-primary); 
+  margin-bottom: 12px; 
+  letter-spacing: -0.02em; 
+  line-height: 1.2;
+}
+.body-text { 
+  font-size: 13.5px; 
+  line-height: 1.6; 
+  color: var(--text-secondary); 
+}
+.body-text code { 
+  font-family: var(--font-mono); 
+  background: rgba(255,255,255,0.1); 
+  padding: 2px 6px; 
+  border-radius: 4px; 
+  color: var(--accent); 
+}
+
+.divider { 
+  height: 0.5px; 
+  background: var(--border); 
+  margin: 20px 0; 
+}
+
+.examples-grid { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
+  margin-top: 10px; 
+}
+
+/* Example Cards (Frosted Glass & Vibrancy) */
+.example-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: all 150ms var(--ease-spring);
+}
+
+.example-card:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.info-callout {
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  padding: 12px 14px;
+  background: rgba(255, 214, 10, 0.1); 
+  color: var(--accent);
+  border: 0.5px solid rgba(255, 214, 10, 0.2); 
+  border-radius: 8px; 
+  font-weight: 500; 
+  margin-top: 20px; 
+  font-size: 13px;
+}
+
+/* Sidebar Footer & Bottom Actions */
+.sidebar-footer {
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.25);
+  border-top: 0.5px solid var(--border);
+  display: flex; 
+  gap: 8px; 
+  align-items: center; 
+  justify-content: space-between;
+  margin-top: auto; 
+  flex-shrink: 0;
+}
+
+.btn-complete-toggle {
+  flex: 1; 
+  justify-content: center; 
+  height: 32px; 
+  font-size: 12px;
+  transition: all var(--duration-normal) var(--ease-spring);
+}
+
+.btn-complete-toggle.is-completed {
+  background: rgba(50, 215, 75, 0.15) !important;
+  border-color: rgba(50, 215, 75, 0.4) !important;
+  color: var(--term-green) !important;
+}
+
+.btn-next-task {
+  flex: 1; 
+  justify-content: center; 
+  height: 32px; 
+  font-size: 12px;
+  transition: all var(--duration-normal) var(--ease-spring);
+}
+
+/* Apple Green Success Transformation */
+.btn-next-task.all-passed-success {
+  background: var(--term-green) !important;
+  color: #000000 !important;
+  box-shadow: 0 4px 16px rgba(50, 215, 75, 0.35);
+  transform: scale(1.02);
+}
+
+/* ==========================================================================
+   MACOS TASKS & FILES LIBRARY MODAL
+   ========================================================================== */
+.mac-tasks-window {
+  width: 760px; 
+  height: 540px;
   background: var(--bg-vibrant);
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   border: 0.5px solid var(--border-strong);
-  border-radius: 12px; box-shadow: var(--shadow-lg);
-  display: flex; flex-direction: column; overflow: hidden;
+  border-radius: 12px; 
+  box-shadow: var(--shadow-lg);
+  display: flex; 
+  flex-direction: column; 
+  overflow: hidden;
+  animation: sheetEnter var(--duration-normal) var(--ease-spring) forwards;
+}
+
+.tasks-toolbar {
+  padding: 12px 16px; 
+  background: var(--bg-secondary);
+  border-bottom: 0.5px solid var(--border);
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  gap: 16px;
+}
+
+.search-wrap {
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  flex: 1; 
+  max-width: 240px; 
+  position: relative;
+}
+.search-icon { position: absolute; left: 10px; color: var(--text-tertiary); font-size: 14px; }
+.mac-input.task-search { padding-left: 30px; height: 28px; font-size: 12px; }
+
+.tasks-body { 
+  flex: 1; 
+  padding: 16px 20px; 
+  overflow-y: auto; 
+  background: var(--bg-primary); 
+}
+
+.tasks-list { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
+}
+
+/* Task Item Row Cards (Apple Glass & Vibrancy) */
+.task-card-row {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: all 200ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.task-card-row:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 214, 10, 0.4);
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.task-card-row.completed {
+  background: rgba(50, 215, 75, 0.08);
+  border-color: rgba(50, 215, 75, 0.35);
+  box-shadow: inset 0 1px 0 rgba(50, 215, 75, 0.2), 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.task-row-left { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
+
+.status-toggle-btn {
+  width: 22px; 
+  height: 22px; 
+  border-radius: 50%;
+  border: 1.5px solid var(--text-tertiary); 
+  background: transparent;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  cursor: pointer; 
+  flex-shrink: 0; 
+  transition: all var(--duration-fast);
+  color: #1C1C1E; 
+  font-size: 12px;
+}
+.status-toggle-btn:hover { border-color: var(--accent); }
+
+.task-card-row.completed .status-toggle-btn {
+  background: var(--term-green); 
+  border-color: var(--term-green); 
+  color: #000;
+}
+
+.task-details { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.task-title {
+  font-size: 13.5px; 
+  font-weight: 600; 
+  color: var(--text-primary);
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+  white-space: nowrap;
+}
+.task-card-row.completed .task-title { 
+  color: var(--text-secondary); 
+  text-decoration: line-through; 
+  opacity: 0.8; 
+}
+
+.task-meta { font-size: 11px; color: var(--text-tertiary); display: flex; gap: 10px; align-items: center; }
+
+/* Status Badges */
+.badge-status { 
+  font-size: 10px; 
+  font-weight: 700; 
+  padding: 2px 8px; 
+  border-radius: 12px; 
+  letter-spacing: 0.3px; 
+}
+
+.badge-status.completed-badge {
+  background: rgba(50, 215, 75, 0.18);
+  color: #32D74B;
+  border: 0.5px solid rgba(50, 215, 75, 0.35);
+}
+
+.badge-status.incomplete-badge {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-tertiary);
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
+}
+
+.task-row-actions { display: flex; align-items: center; gap: 8px; }
+
+/* ==========================================================================
+   MACOS SYSTEM SETTINGS WINDOW
+   ========================================================================== */
+.mac-modal-backdrop {
+  position: fixed; 
+  inset: 0; 
+  z-index: 500;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  transition: opacity var(--duration-normal) var(--ease-spring);
+}
+
+.mac-settings-window {
+  width: 700px; 
+  height: 520px;
+  background: var(--bg-vibrant);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 0.5px solid var(--border-strong);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  display: flex; 
+  flex-direction: column;
+  overflow: hidden;
   animation: sheetEnter var(--duration-normal) var(--ease-spring) forwards;
 }
 
@@ -91,25 +504,49 @@
 }
 
 .mac-modal-header {
-  height: 48px; padding: 0 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid var(--border);
+  height: 48px; 
+  padding: 0 16px;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  border-bottom: 0.5px solid var(--border);
 }
 .mac-modal-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
 
 .mac-settings-body { display: flex; flex: 1; overflow: hidden; }
 
 .settings-sidebar {
-  width: 210px; flex-shrink: 0; background: rgba(0,0,0,0.2);
-  border-right: 0.5px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 4px;
+  width: 210px; 
+  flex-shrink: 0;
+  background: rgba(0,0,0,0.2);
+  border-right: 0.5px solid var(--border);
+  padding: 12px; 
+  display: flex; 
+  flex-direction: column; 
+  gap: 4px;
 }
 
 .settings-nav-item {
-  display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 6px; border: none;
-  background: transparent; color: var(--text-secondary); font-family: var(--font-system); font-size: 12.5px; font-weight: 500;
-  cursor: pointer; transition: all var(--duration-fast); text-align: left;
+  display: flex; 
+  align-items: center; 
+  gap: 10px;
+  padding: 7px 10px; 
+  border-radius: 6px; 
+  border: none;
+  background: transparent; 
+  color: var(--text-secondary);
+  font-family: var(--font-system); 
+  font-size: 12.5px; 
+  font-weight: 500;
+  cursor: pointer; 
+  transition: all var(--duration-fast); 
+  text-align: left;
 }
 .settings-nav-item i { font-size: 16px; color: var(--text-tertiary); }
 .settings-nav-item:hover { background: var(--surface-hover); color: var(--text-primary); }
-.settings-nav-item.active { background: rgba(255,255,255,0.12); color: var(--text-primary); font-weight: 600; }
+.settings-nav-item.active {
+  background: rgba(255,255,255,0.12); color: var(--text-primary); font-weight: 600;
+}
 .settings-nav-item.active i { color: var(--accent); }
 
 .settings-nav-divider { height: 0.5px; background: var(--border); margin: 6px 0; }
@@ -167,144 +604,20 @@
 
 .mac-modal-footer { height: 48px; padding: 0 20px; display: flex; justify-content: flex-end; align-items: center; border-top: 0.5px solid var(--border); background: var(--bg-secondary); }
 
-/* Sidebar */
-.app-layout { display: flex; flex: 1; overflow: hidden; }
-.sidebar { width: 380px; flex-shrink: 0; background: var(--bg-vibrant); backdrop-filter: saturate(180%) blur(24px); -webkit-backdrop-filter: saturate(180%) blur(24px); border-right: 0.5px solid var(--border); display: flex; flex-direction: column; }
-.sidebar-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
-.section-caps { font-size: 11px; font-weight: 600; color: var(--text-tertiary); letter-spacing: 0.04em; }
-.icon-btn { background: transparent; border: none; color: var(--text-tertiary); cursor: pointer; font-size: 18px; border-radius: 6px; padding: 4px; transition: all var(--duration-fast) var(--ease-spring); }
-.icon-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
-.icon-btn:active { transform: scale(0.9); }
-.sidebar-content { padding: 0 20px 24px; overflow-y: auto; }
-.title-1 { font-size: 24px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; letter-spacing: -0.02em; line-height: 1.2;}
-.body-text { font-size: 13.5px; line-height: 1.6; color: var(--text-secondary); }
-.body-text code { font-family: var(--font-mono); background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
-.divider { height: 0.5px; background: var(--border); margin: 20px 0; }
-.examples-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
-.example-card { background: rgba(255,255,255,0.04); border-radius: 8px; padding: 12px 14px; border: 0.5px solid var(--border); font-family: var(--font-mono); font-size: 11.5px; line-height: 1.5; color: var(--text-secondary); }
-.info-callout { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: rgba(255, 214, 10, 0.1); color: var(--accent); border: 0.5px solid rgba(255, 214, 10, 0.2); border-radius: 8px; font-weight: 500; margin-top: 20px; font-size: 13px; }
-
-/* Toasts */
-#toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
-.mac-toast { background: rgba(40,40,40,0.88); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border: 0.5px solid var(--border-strong); border-radius: 8px; padding: 10px 16px; box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 10px; font-family: var(--font-system); font-size: 12.5px; font-weight: 500; color: #fff; transform: translateY(100%); opacity: 0; animation: toastEnter var(--duration-normal) var(--ease-spring) forwards; }
-.mac-toast.exit { animation: toastExit var(--duration-normal) var(--ease-spring) forwards; }
-.mac-toast i { color: var(--accent); font-size: 16px; }
-
-@keyframes toastEnter { to { transform: translateY(0); opacity: 1; } }
-@keyframes toastExit { to { transform: translateX(120%); opacity: 0; } }
-
-/* Overlay */
-.macos-overlay { position: fixed; inset: 0; background: var(--bg-primary); z-index: 200; display: flex; align-items: center; justify-content: center; transition: opacity var(--duration-normal) var(--ease-spring); }
-.loader-box { text-align: center; }
-.spinner { width: 26px; height: 26px; border: 2.5px solid var(--border-strong); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 12px; }
-.loader-text { font-weight: 500; color: var(--text-secondary); }
-@keyframes spin { to { transform: rotate(360deg); } }
 /* ==========================================================================
-   MACOS TASKS & FILES LIBRARY MODAL
+   AI CHAT WINDOW
    ========================================================================== */
-.mac-tasks-window {
-  width: 760px; height: 540px;
-  background: var(--bg-vibrant);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
-  border: 0.5px solid var(--border-strong);
-  border-radius: 12px;
-  box-shadow: var(--shadow-lg);
-  display: flex; flex-direction: column;
-  overflow: hidden;
-  animation: sheetEnter var(--duration-normal) var(--ease-spring) forwards;
-}
-
-/* Tasks Toolbar */
-.tasks-toolbar {
-  padding: 12px 16px;
-  background: var(--bg-secondary);
-  border-bottom: 0.5px solid var(--border);
-  display: flex; justify-content: space-between; align-items: center; gap: 16px;
-}
-
-.search-wrap {
-  display: flex; align-items: center; gap: 8px; flex: 1; max-width: 240px;
-  position: relative;
-}
-.search-icon { position: absolute; left: 10px; color: var(--text-tertiary); font-size: 14px; }
-.mac-input.task-search { padding-left: 30px; height: 28px; font-size: 12px; }
-
-/* Task List Body */
-.tasks-body { flex: 1; padding: 16px 20px; overflow-y: auto; background: var(--bg-primary); }
-
-.tasks-list {
-  display: flex; flex-direction: column; gap: 10px;
-}
-
-/* Task Card Item */
-.task-card-row {
-  background: var(--bg-secondary);
-  border: 0.5px solid var(--border);
-  border-radius: 10px; padding: 12px 16px;
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  transition: all var(--duration-fast) var(--ease-spring);
-}
-.task-card-row:hover {
-  background: rgba(255,255,255,0.06); border-color: var(--border-strong);
-}
-
-/* Completed Task Highlight Styling */
-.task-card-row.completed {
-  background: rgba(50, 215, 75, 0.05);
-  border-color: rgba(50, 215, 75, 0.25);
-}
-
-.task-row-left { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
-
-/* Status Toggle Checkbox Button */
-.status-toggle-btn {
-  width: 22px; height: 22px; border-radius: 50%;
-  border: 1.5px solid var(--text-tertiary); background: transparent;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0; transition: all var(--duration-fast);
-  color: #1C1C1E; font-size: 12px;
-}
-.status-toggle-btn:hover { border-color: var(--accent); }
-
-.task-card-row.completed .status-toggle-btn {
-  background: var(--term-green); border-color: var(--term-green); color: #000;
-}
-
-.task-details { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.task-title {
-  font-size: 13.5px; font-weight: 600; color: var(--text-primary);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.task-card-row.completed .task-title {
-  color: var(--text-secondary); text-decoration: line-through; opacity: 0.8;
-}
-
-.task-meta { font-size: 11px; color: var(--text-tertiary); display: flex; gap: 10px; align-items: center; }
-
-/* Status Indicator Badges */
-.badge-status {
-  font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; letter-spacing: 0.3px;
-}
-.badge-status.completed-badge {
-  background: rgba(50, 215, 75, 0.2); color: var(--term-green);
-}
-.badge-status.incomplete-badge {
-  background: rgba(255, 255, 255, 0.08); color: var(--text-tertiary);
-}
-
-.task-row-actions { display: flex; align-items: center; gap: 8px; }
-
-/* AI CHAT WINDOW CHROME */
 .mac-ai-window {
-  width: 860px; height: 580px;
+  width: 860px; 
+  height: 580px;
   background: var(--bg-vibrant);
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
   border: 0.5px solid var(--border-strong);
-  border-radius: 12px;
+  border-radius: 12px; 
   box-shadow: var(--shadow-lg);
-  display: flex; flex-direction: column;
+  display: flex; 
+  flex-direction: column; 
   overflow: hidden;
   animation: sheetEnter var(--duration-normal) var(--ease-spring) forwards;
 }
@@ -312,69 +625,55 @@
 .ai-header-title { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text-primary); }
 .mac-ai-body { display: flex; flex: 1; overflow: hidden; }
 
-/* Task History Sidebar */
 .ai-task-sidebar {
-  width: 240px; flex-shrink: 0;
+  width: 240px; 
+  flex-shrink: 0; 
   background: rgba(0, 0, 0, 0.25);
-  border-right: 0.5px solid var(--border);
-  display: flex; flex-direction: column;
+  border-right: 0.5px solid var(--border); 
+  display: flex; 
+  flex-direction: column;
 }
 
 .ai-sidebar-header {
-  padding: 14px 16px; display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 16px; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
   border-bottom: 0.5px solid var(--border);
 }
 
-.ai-task-list {
-  flex: 1; padding: 10px; overflow-y: auto;
-  display: flex; flex-direction: column; gap: 6px;
-}
+.ai-task-list { flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
 
 .ai-task-item {
   display: flex; align-items: center; gap: 10px; padding: 8px 10px;
   border-radius: 6px; border: 0.5px solid transparent;
-  color: var(--text-secondary); cursor: pointer;
-  transition: all var(--duration-fast); font-size: 12.5px;
+  color: var(--text-secondary); cursor: pointer; transition: all var(--duration-fast); font-size: 12.5px;
 }
 .ai-task-item i { font-size: 16px; color: var(--accent); flex-shrink: 0; }
 .ai-task-item:hover { background: var(--surface-hover); color: var(--text-primary); }
-.ai-task-item.active {
-  background: rgba(255, 214, 10, 0.12); border-color: rgba(255, 214, 10, 0.3);
-  color: var(--text-primary); font-weight: 500;
-}
+.ai-task-item.active { background: rgba(255, 214, 10, 0.12); border-color: rgba(255, 214, 10, 0.3); color: var(--text-primary); font-weight: 500; }
 
 .task-item-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* Right Chat Container */
-.ai-chat-container {
-  flex: 1; display: flex; flex-direction: column;
-  background: var(--bg-primary); overflow: hidden;
-}
-
-.chat-messages-list {
-  flex: 1; padding: 20px; overflow-y: auto;
-  display: flex; flex-direction: column; gap: 16px;
-}
+.ai-chat-container { flex: 1; display: flex; flex-direction: column; background: var(--bg-primary); overflow: hidden; }
+.chat-messages-list { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
 
 .msg-row.user { align-self: flex-end; max-width: 75%; }
 .user-bubble {
-  background: rgba(255, 214, 10, 0.18);
+  background: rgba(255, 214, 10, 0.18); 
   border: 0.5px solid rgba(255, 214, 10, 0.35);
-  color: var(--text-primary);
-  padding: 10px 14px; border-radius: 14px 14px 2px 14px;
-  font-size: 13px; line-height: 1.5; box-shadow: var(--shadow-sm);
+  color: var(--text-primary); 
+  padding: 10px 14px; 
+  border-radius: 14px 14px 2px 14px;
+  font-size: 13px; 
+  line-height: 1.5; 
+  box-shadow: var(--shadow-sm);
 }
 
-.msg-row.ai {
-  align-self: flex-start; max-width: 90%;
-  display: flex; gap: 12px; align-items: flex-start;
-}
-
+.msg-row.ai { align-self: flex-start; max-width: 90%; display: flex; gap: 12px; align-items: flex-start; }
 .ai-avatar {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: var(--accent); color: var(--accent-text);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px; flex-shrink: 0; margin-top: 2px;
+  width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--accent-text);
+  display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; margin-top: 2px;
 }
 
 .ai-flat-content { flex: 1; color: var(--text-primary); font-size: 13.5px; line-height: 1.6; }
@@ -382,15 +681,28 @@
 .ai-flat-content p:last-child { margin-bottom: 0; }
 
 .ai-code-block {
-  background: rgba(0, 0, 0, 0.4); border: 0.5px solid var(--border);
-  border-radius: 8px; padding: 12px; font-family: var(--font-mono); font-size: 12px;
-  line-height: 1.5; color: var(--text-secondary); margin: 10px 0; overflow-x: auto;
+  background: rgba(0, 0, 0, 0.4); 
+  border: 0.5px solid var(--border);
+  border-radius: 8px; 
+  padding: 12px; 
+  font-family: var(--font-mono); 
+  font-size: 12px;
+  line-height: 1.5; 
+  color: var(--text-secondary); 
+  margin: 10px 0; 
+  overflow-x: auto;
 }
 
 .inline-task-card {
-  margin-top: 12px; background: var(--bg-secondary);
-  border: 0.5px solid var(--border-strong); border-radius: 10px; padding: 14px 16px;
-  display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow-sm);
+  margin-top: 12px; 
+  background: var(--bg-secondary);
+  border: 0.5px solid var(--border-strong); 
+  border-radius: 10px; 
+  padding: 14px 16px;
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
+  box-shadow: var(--shadow-sm);
 }
 
 .inline-task-header { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
@@ -399,23 +711,73 @@
 .btn-open-task { align-self: flex-start; margin-top: 4px; }
 
 .chat-input-wrapper {
-  padding: 12px 16px; background: var(--bg-secondary);
-  border-top: 0.5px solid var(--border); display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; 
+  background: var(--bg-secondary);
+  border-top: 0.5px solid var(--border); 
+  display: flex; 
+  align-items: center; 
+  gap: 10px;
 }
 
 .chat-textarea {
-  flex: 1; background: rgba(0,0,0,0.25);
-  border: 0.5px solid var(--border-strong); border-radius: 8px;
-  padding: 8px 12px; color: var(--text-primary);
-  font-family: var(--font-system); font-size: 13px; line-height: 1.4; outline: none; resize: none; max-height: 100px;
+  flex: 1; 
+  background: rgba(0,0,0,0.25);
+  border: 0.5px solid var(--border-strong); 
+  border-radius: 8px;
+  padding: 8px 12px; 
+  color: var(--text-primary);
+  font-family: var(--font-system); 
+  font-size: 13px; 
+  line-height: 1.4; 
+  outline: none; 
+  resize: none; 
+  max-height: 100px;
 }
 .chat-textarea:focus { border-color: var(--accent); }
 
 .btn-send {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: var(--accent); color: var(--accent-text);
-  border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  font-size: 16px; flex-shrink: 0; transition: transform var(--duration-fast) var(--ease-spring);
+  width: 32px; 
+  height: 32px; 
+  border-radius: 50%;
+  background: var(--accent); 
+  color: var(--accent-text);
+  border: none; 
+  cursor: pointer; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  font-size: 16px; 
+  flex-shrink: 0; 
+  transition: transform var(--duration-fast) var(--ease-spring);
 }
 .btn-send:hover { transform: scale(1.05); }
 .btn-send:active { transform: scale(0.92); }
+
+/* ==========================================================================
+   TOASTS & OVERLAYS
+   ========================================================================== */
+#toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
+.mac-toast {
+  background: rgba(40,40,40,0.88); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 0.5px solid var(--border-strong); border-radius: 8px; padding: 10px 16px; box-shadow: var(--shadow-md);
+  display: flex; align-items: center; gap: 10px; font-family: var(--font-system); font-size: 12.5px; font-weight: 500; color: #fff;
+  transform: translateY(100%); opacity: 0; animation: toastEnter var(--duration-normal) var(--ease-spring) forwards;
+}
+.mac-toast.exit { animation: toastExit var(--duration-normal) var(--ease-spring) forwards; }
+.mac-toast i { color: var(--accent); font-size: 16px; }
+
+@keyframes toastEnter { to { transform: translateY(0); opacity: 1; } }
+@keyframes toastExit { to { transform: translateX(120%); opacity: 0; } }
+
+.macos-overlay {
+  position: fixed; inset: 0; background: var(--bg-primary); z-index: 200;
+  display: flex; align-items: center; justify-content: center; transition: opacity var(--duration-normal) var(--ease-spring);
+}
+.loader-box { text-align: center; }
+.spinner {
+  width: 26px; height: 26px; border: 2.5px solid var(--border-strong);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 1s linear infinite; margin: 0 auto 12px;
+}
+.loader-text { font-weight: 500; color: var(--text-secondary); }
+@keyframes spin { to { transform: rotate(360deg); } }

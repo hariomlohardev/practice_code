@@ -15,6 +15,11 @@ const btnReset = document.getElementById('btn-reset');
 const btnNext = document.getElementById('btn-next-problem');
 const btnClearTerm = document.getElementById('btn-clear-term');
 
+const btnMarkCompleted = document.getElementById('btn-mark-completed');
+const textMarkCompleted = document.getElementById('text-mark-completed');
+const iconMarkCompleted = document.getElementById('icon-mark-completed');
+const btnNextChallenge = document.getElementById('btn-next-challenge');
+
 const tabZsh = document.getElementById('tab-zsh');
 const tabPytest = document.getElementById('tab-pytest');
 
@@ -44,7 +49,7 @@ async function initializeApp() {
     }, 1000);
   });
 
-  // Global Keyboard Shortcut: Cmd/Ctrl + Enter
+  // Global Shortcut: Cmd/Ctrl + Enter
   document.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
@@ -82,11 +87,16 @@ async function initializeApp() {
     editor.setValue(currentProblem.boilerplate);
     showToast("Editor Reset", "ph-arrow-counter-clockwise");
   });
-  btnNext.addEventListener('click', () => {
-    currentProblem = getRandomAIProblem();
-    renderProblem(currentProblem);
-    editor.setValue(currentProblem.boilerplate);
-    showToast("Loaded Next Problem", "ph-folder-open");
+  
+  btnNext.addEventListener('click', loadRandomOrNextProblem);
+  btnNextChallenge.addEventListener('click', handleNextChallengeClick);
+
+  btnMarkCompleted.addEventListener('click', () => {
+    if (!currentProblem || !currentProblem.id) return;
+    const isCompleted = AppDB.toggleTaskStatus(currentProblem.id);
+    currentProblem.completed = isCompleted;
+    updateCompletedButtonUI(isCompleted);
+    showToast(isCompleted ? "Task Marked as Completed" : "Task Marked Incomplete", isCompleted ? "ph-check-circle" : "ph-circle");
   });
 
   // Settings Controls
@@ -117,7 +127,50 @@ function loadTaskIntoWorkspace(taskObj) {
   currentProblem = taskObj;
   renderProblem(currentProblem);
   editor.setValue(currentProblem.boilerplate);
+  resetSuccessButtonState();
+  updateCompletedButtonUI(!!currentProblem.completed);
   AppDB.saveActiveState({ code: editor.getValue(), problem: currentProblem });
+}
+
+function updateCompletedButtonUI(isCompleted) {
+  btnMarkCompleted.classList.toggle('is-completed', isCompleted);
+  if (isCompleted) {
+    iconMarkCompleted.className = 'ph-fill ph-check-circle';
+    textMarkCompleted.innerText = 'Completed';
+  } else {
+    iconMarkCompleted.className = 'ph ph-circle';
+    textMarkCompleted.innerText = 'Completed';
+  }
+}
+
+function resetSuccessButtonState() {
+  btnNextChallenge.classList.remove('all-passed-success');
+  btnNextChallenge.innerHTML = `<span>Next Task</span> <i class="ph-bold ph-arrow-right"></i>`;
+}
+
+function loadRandomOrNextProblem() {
+  currentProblem = getRandomAIProblem();
+  renderProblem(currentProblem);
+  editor.setValue(currentProblem.boilerplate);
+  resetSuccessButtonState();
+  updateCompletedButtonUI(false);
+  showToast("Loaded Next Problem", "ph-folder-open");
+}
+
+/**
+ * Handles clicking "Next Task" in the sidebar footer
+ */
+function handleNextChallengeClick() {
+  const nextIncomplete = AppDB.getNextIncompleteTask(currentProblem ? currentProblem.id : null);
+  
+  if (nextIncomplete) {
+    loadTaskIntoWorkspace(nextIncomplete);
+    showToast("Loaded " + nextIncomplete.title, "ph-folder-open");
+  } else {
+    // If no remaining incomplete tasks, open Jupy AI chat to generate a new task!
+    AIUI.open();
+    showToast("Generating Next Task with Jupy AI...", "ph-sparkle");
+  }
 }
 
 async function handleTerminalCommand(cmd) {
@@ -167,13 +220,18 @@ async function executeCode() {
 
   TerminalManager.renderTestResults(result, currentProblem.functionName);
 
-  // If all tests passed, auto-mark task as completed!
+  // Check if ALL tests passed
   if (result.results && result.results.length > 0 && result.results.every(r => r.passed)) {
-    if (currentProblem.id) {
+    if (currentProblem && currentProblem.id) {
       currentProblem.completed = true;
       AppDB.saveTask(currentProblem);
-      showToast("Challenge Completed! Marked in Library", "ph-check-circle");
+      updateCompletedButtonUI(true);
     }
+
+    // Trigger glowing green "Next Challenge" transformation!
+    btnNextChallenge.classList.add('all-passed-success');
+    btnNextChallenge.innerHTML = `<span>Next Challenge</span> <i class="ph-bold ph-arrow-right"></i>`;
+    showToast("All Tests Passed! Task Completed", "ph-check-circle");
   }
 
   TerminalManager.appendPrompt(handleTerminalCommand);
@@ -195,6 +253,7 @@ function renderProblem(problem) {
   document.getElementById('problem-desc').innerHTML = problem.description;
   document.getElementById('target-time').innerText = problem.targetTimeMs;
   document.getElementById('problem-examples').innerHTML = problem.examples.map(ex => `<div class="example-card">${ex.replace(/\n/g, '<br>')}</div>`).join('');
+  updateCompletedButtonUI(!!problem.completed);
 }
 
 window.addEventListener('DOMContentLoaded', initializeApp);

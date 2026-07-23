@@ -45,8 +45,6 @@
   <!-- macOS Tasks & Files Library Modal -->
   <div id="tasks-modal" class="mac-modal-backdrop hidden">
     <div class="mac-tasks-window">
-      
-      <!-- Window Header -->
       <div class="mac-modal-header">
         <div class="mac-traffic-lights">
           <div class="dot red" id="btn-close-tasks-dot" title="Close"></div>
@@ -58,7 +56,6 @@
         <button id="btn-close-tasks" class="icon-btn"><i class="ph ph-x"></i></button>
       </div>
 
-      <!-- Toolbar: Filter Segmented Controls + Search -->
       <div class="tasks-toolbar">
         <div class="mac-segmented-control" style="width: 280px;">
           <button class="seg-btn active" id="filter-task-all">All</button>
@@ -72,20 +69,15 @@
         </div>
       </div>
 
-      <!-- Task List Area -->
       <div class="tasks-body">
-        <div id="tasks-list-container" class="tasks-list">
-          <!-- Dynamically populated task rows -->
-        </div>
+        <div id="tasks-list-container" class="tasks-list"></div>
       </div>
-
     </div>
   </div>
 
   <!-- macOS System Settings Window -->
   <div id="settings-modal" class="mac-modal-backdrop hidden">
     <div class="mac-settings-window">
-      
       <div class="mac-modal-header">
         <div class="mac-traffic-lights">
           <div class="dot red" id="btn-close-settings-dot" title="Close"></div>
@@ -270,10 +262,12 @@
       </header>
 
       <div class="app-layout">
+        
+        <!-- Sidebar -->
         <aside class="sidebar">
           <div class="sidebar-header">
             <span class="section-caps">SPECIFICATION</span>
-            <button id="btn-next-problem" class="icon-btn" title="Next Problem">
+            <button id="btn-next-problem" class="icon-btn" title="Load Random Challenge">
               <i class="ph ph-arrows-clockwise"></i>
             </button>
           </div>
@@ -288,6 +282,17 @@
               <i class="ph-fill ph-timer"></i> 
               <span>Target: &le; <span id="target-time">0</span>ms</span>
             </div>
+          </div>
+
+          <!-- Horizontal Sidebar Footer Action Bar -->
+          <div class="sidebar-footer">
+            <button id="btn-mark-completed" class="btn btn-secondary btn-complete-toggle">
+              <i class="ph ph-circle" id="icon-mark-completed"></i> 
+              <span id="text-mark-completed">Completed</span>
+            </button>
+            <button id="btn-next-challenge" class="btn btn-primary btn-next-task">
+              <span>Next Task</span> <i class="ph-bold ph-arrow-right"></i>
+            </button>
           </div>
         </aside>
 
@@ -319,7 +324,7 @@
   <script src="js/db.js"></script>
   <script src="js/jupy-ai.js"></script>
   <script src="js/ai-ui.js"></script>
-  <script src="js/tasks-ui.js"></script> <!-- NEW FILE -->
+  <script src="js/tasks-ui.js"></script>
   <script src="js/intellisense.js"></script>
   <script src="js/mock-ai.js"></script>
   <script src="js/engine.js"></script>

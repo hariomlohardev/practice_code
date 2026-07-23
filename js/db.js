@@ -60,9 +60,6 @@ const AppDB = (() => {
     localStorage.setItem(KEYS.TASKS_HISTORY, JSON.stringify(tasks));
   }
 
-  /**
-   * Toggle task completed/incomplete status
-   */
   function toggleTaskStatus(taskId) {
     const tasks = getTasksHistory();
     const task = tasks.find(t => t.id === taskId);
@@ -74,13 +71,19 @@ const AppDB = (() => {
     return false;
   }
 
-  /**
-   * Delete task from library
-   */
   function deleteTask(taskId) {
     let tasks = getTasksHistory();
     tasks = tasks.filter(t => t.id !== taskId);
     localStorage.setItem(KEYS.TASKS_HISTORY, JSON.stringify(tasks));
+  }
+
+  /**
+   * Find the next incomplete task in the user's saved library
+   */
+  function getNextIncompleteTask(currentTaskId) {
+    const tasks = getTasksHistory();
+    const remaining = tasks.filter(t => !t.completed && t.id !== currentTaskId);
+    return remaining.length > 0 ? remaining[0] : null;
   }
 
   return {
@@ -93,6 +96,7 @@ const AppDB = (() => {
     getTasksHistory,
     saveTask,
     toggleTaskStatus,
-    deleteTask
+    deleteTask,
+    getNextIncompleteTask
   };
 })();
