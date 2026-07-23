@@ -3,131 +3,128 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>macOS Python Studio</title>
+  <title>macOS Developer Tool</title>
   
-  <!-- Phosphor Icons -->
+  <!-- Phosphor Icons (Monoline 16-20px as per spec) -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   
   <!-- CodeMirror CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/nord.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
   
-  <!-- CodeMirror Core & Python Mode -->
+  <!-- CodeMirror Core -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
-  
-  <!-- CodeMirror Addons -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/python-hint.min.js"></script>
   
-  <!-- Pyodide Core -->
+  <!-- Pyodide -->
   <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
   
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Startup Loader -->
-  <div id="loading-screen">
-    <div class="mac-loader">
-      <i class="ph-fill ph-apple-logo"></i>
-      <div class="mac-progress-track">
-        <div class="mac-progress-fill"></div>
-      </div>
-      <span class="startup-text">Starting Python Environment...</span>
+  <!-- Loading State (Native macOS Overlay Style) -->
+  <div id="loading-screen" class="macos-overlay">
+    <div class="loader-box">
+      <div class="spinner"></div>
+      <div class="loader-text">Initializing Engine...</div>
     </div>
   </div>
 
-  <!-- Mac Desktop Background Wrapper -->
-  <div class="mac-desktop">
-    <!-- Modern Rounded Mac Window -->
-    <div id="mac-window" class="hidden">
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- macOS Desktop Environment -->
+  <div class="desktop-environment">
+    
+    <!-- Native macOS App Window -->
+    <div id="macos-app" class="macos-window hidden">
       
-      <!-- Left Pane: Problem Description -->
-      <div class="pane left-pane">
-        <!-- Integrated Traffic Lights -->
-        <div class="pane-header mac-vibrancy">
-          <div class="mac-traffic-lights">
-            <div class="mac-btn close"></div>
-            <div class="mac-btn minimize"></div>
-            <div class="mac-btn maximize"></div>
-          </div>
-          <span class="doc-tag">MARKDOWN</span>
+      <!-- Top Bar: Global Actions & Traffic Lights -->
+      <header class="top-bar drag-zone">
+        <div class="traffic-lights">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
         </div>
         
-        <div class="markdown-body">
-          <button id="btn-next-problem" class="btn-refresh"><i class="ph ph-arrows-clockwise"></i> Load New</button>
-          <h1 id="problem-title" class="title-heading">...</h1>
-          <div id="problem-desc" class="desc-content">...</div>
-          <div class="border-divider"></div>
-          <div id="problem-examples" class="examples-block"></div>
-          <div class="target-spec">
-            <i class="ph ph-timer"></i> Target: &le; <span id="target-time">0</span>ms
-          </div>
+        <!-- Center Context -->
+        <div class="top-bar-center">
+          <i class="ph ph-folder"></i>
+          <span class="file-title">main.py</span>
         </div>
-      </div>
 
-      <!-- Right Pane: Mac Editor + Mac zsh Terminal -->
-      <div class="pane right-pane">
+        <!-- Global Actions -->
+        <div class="top-bar-actions">
+          <button id="btn-reset" class="btn btn-secondary">
+            <i class="ph ph-arrow-counter-clockwise"></i> Reset
+          </button>
+          <button id="btn-run" class="btn btn-primary">
+            <i class="ph ph-play-fill"></i> Run <span class="kbd">⌘Enter</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Layout -->
+      <div class="app-layout">
         
-        <!-- VS Code Mac Style Editor Header -->
-        <div class="mac-editor-toolbar mac-vibrancy">
-          <div class="mac-tabs">
-            <div class="mac-tab active">
-              <i class="ph-fill ph-file-code" style="color: #4daafc;"></i>
-              <span>solution.py</span>
-            </div>
-          </div>
-
-          <!-- Mac Editor Actions (RUN BUTTON HERE) -->
-          <div class="mac-actions">
-            <button id="btn-reset" class="mac-icon-btn" title="Reset Code">
-              <i class="ph ph-arrow-counter-clockwise"></i>
-            </button>
-            <div class="action-divider"></div>
-            <button id="btn-run" class="mac-play-pill" title="Run Code (Cmd+Enter)">
-              <i class="ph-fill ph-play"></i>
-              <span>Run</span>
+        <!-- Sidebar Navigation/Context (260px vibrant) -->
+        <aside class="sidebar">
+          <div class="sidebar-header">
+            <span class="section-caps">PROBLEM SPECIFICATION</span>
+            <button id="btn-next-problem" class="icon-btn" title="Next Problem">
+              <i class="ph ph-arrows-clockwise"></i>
             </button>
           </div>
-        </div>
-        
-        <!-- CodeMirror Editor Container -->
-        <div class="editor-wrapper">
-          <textarea id="code-editor"></textarea>
-        </div>
-
-        <!-- Mac zsh Terminal Area -->
-        <div class="mac-terminal">
-          <!-- Terminal Panel Header -->
-          <div class="terminal-panel-header mac-vibrancy">
-            <div class="term-tabs">
-              <div class="term-tab">PROBLEMS</div>
-              <div class="term-tab">OUTPUT</div>
-              <div class="term-tab active">TERMINAL</div>
-            </div>
-            <div class="term-actions">
-              <i class="ph ph-plus"></i>
-              <i class="ph ph-split-horizontal"></i>
-              <i class="ph ph-trash"></i>
-              <i class="ph ph-x"></i>
+          
+          <div class="sidebar-content">
+            <h1 id="problem-title" class="title-1">...</h1>
+            <p id="problem-desc" class="body-text">...</p>
+            
+            <div class="divider"></div>
+            
+            <span class="section-caps">TEST CASES</span>
+            <div id="problem-examples" class="examples-grid"></div>
+            
+            <div class="info-callout">
+              <i class="ph ph-clock"></i> Target Constraint: &le; <span id="target-time">0</span>ms
             </div>
           </div>
+        </aside>
 
-          <!-- Terminal Output Screen -->
-          <div id="terminal-screen" class="terminal-body">
-            <div class="terminal-line text-muted">Last login: <span id="login-time"></span> on ttys001</div>
-            <div id="terminal-log-stream">
-              <div class="terminal-line prompt-line">
-                <span class="prompt-user">dev@MacBook-Pro</span> <span class="prompt-dir">python-practice</span> % <span class="text-muted">_</span>
+        <!-- Main Content Area (Opaque, for data) -->
+        <main class="main-content">
+          
+          <!-- Code Editor -->
+          <div class="editor-section">
+            <textarea id="code-editor"></textarea>
+          </div>
+
+          <!-- Bottom Panel: Native Terminal Console -->
+          <div class="terminal-panel">
+            <div class="panel-header">
+              <span class="tab active">Console</span>
+              <span class="tab">Test Output</span>
+              <div class="spacer"></div>
+              <i class="ph ph-trash action-icon" onclick="clearTerminal()"></i>
+            </div>
+            
+            <div id="terminal-screen" class="terminal-content">
+              <div class="term-line text-tertiary">Session started: <span id="login-time"></span></div>
+              <div id="terminal-log-stream">
+                <div class="term-line prompt-wrap">
+                  <span class="prompt-host">macbook-pro</span> <span class="prompt-dir">~</span> % <span class="text-tertiary">_</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
+        </main>
       </div>
     </div>
   </div>

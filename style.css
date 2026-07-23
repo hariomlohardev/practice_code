@@ -1,249 +1,311 @@
 /* ==========================================================================
-   MODERN MACOS & VS CODE DESIGN TOKENS
+   MACOS NATIVE DESIGN SYSTEM TOKENS
    ========================================================================== */
 :root {
-  /* VS Code Mac Dark Theme */
-  --mac-bg-solid: #1e1e1e;
-  --mac-sidebar-bg: #18181b; 
-  --mac-border: rgba(255, 255, 255, 0.08);
-  --mac-border-solid: #2b2b2b;
+  /* Dark Mode Palette (Forced for developer tool feel) */
+  --bg-primary: #1C1C1E;    /* Main Content */
+  --bg-secondary: #2C2C2E;  /* Panels / Cards */
+  --bg-tertiary: #3A3A3C;   /* Inputs */
+  --bg-elevated: #2C2C2E;
   
-  /* Vibrancy (Apple Translucency) */
-  --mac-vibrancy-bg: rgba(30, 30, 30, 0.65);
+  --bg-vibrant: rgba(30, 30, 30, 0.72); /* Apple Vibrancy */
 
-  /* Typography Colors */
-  --text-main: #cccccc;
-  --text-white: #ffffff;
-  --text-muted: #85858b;
-  --text-accent: #4daafc;
+  --text-primary: #F5F5F7;
+  --text-secondary: #98989D;
+  --text-tertiary: #636366;
 
-  /* Authentic Mac Traffic Lights */
-  --mac-red: #ED6A5E;
-  --mac-yellow: #F4BF4F;
-  --mac-green: #61C554;
+  /* Thin definition borders */
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
 
-  /* Mac Terminal Colors */
-  --term-green: #4ade80;
-  --term-red: #f87171;
-  --term-yellow: #facc15;
-  --term-cyan: #22d3ee;
+  /* Apple Accent Colors */
+  --accent: #0A84FF;       
+  --accent-hover: #409CFF;
+  
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --surface-active: rgba(255, 255, 255, 0.1);
 
-  /* Fonts */
-  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-  --font-mono: "SF Mono", "Menlo", "Monaco", "Consolas", monospace;
+  /* Layered Shadows */
+  --shadow-sm: 0 0 0 0.5px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.2);
+  --shadow-md: 0 0 0 0.5px rgba(0,0,0,0.1), 0 4px 12px rgba(0,0,0,0.3);
+  --shadow-lg: 0 0 0 0.5px rgba(0,0,0,0.1), 0 12px 40px rgba(0,0,0,0.15), 0 40px 80px rgba(0,0,0,0.4);
+
+  /* Traffic Lights */
+  --traffic-red: #FF5F57;
+  --traffic-yellow: #FEBC2E;
+  --traffic-green: #28C840;
+
+  /* Terminal Accents */
+  --term-green: #30D158;
+  --term-red: #FF453A;
+  --term-cyan: #64D2FF;
+
+  /* Micro-animations */
+  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+
+  /* Typography */
+  --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, sans-serif;
+  --font-mono: "SF Mono", "Menlo", "Monaco", monospace;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: var(--font-ui);
-  background-color: #000000;
-  color: var(--text-main);
+  font-family: var(--font-system);
+  font-size: 13px; /* Standard macOS Body size */
+  background: #000;
+  color: var(--text-primary);
   height: 100vh;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
 .hidden { display: none !important; }
-.text-muted { color: var(--text-muted); }
 
-/* ==========================================================================
-   MAC DESKTOP & FLOATING WINDOW
-   ========================================================================== */
-.mac-desktop {
+/* Desktop Wallpaper */
+.desktop-environment {
   width: 100vw; height: 100vh;
   display: flex; align-items: center; justify-content: center;
-  background: radial-gradient(circle at top left, #1a1a2e 0%, #000000 100%);
+  background: radial-gradient(circle at center, #1a1a24 0%, #000000 100%);
   padding: 40px;
 }
 
-#mac-window {
-  width: 100%; height: 100%; max-width: 1600px;
-  display: flex;
-  background-color: var(--mac-bg-solid);
-  border-radius: 12px;
-  box-shadow: 0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-  border: 1px solid rgba(0,0,0,0.8);
+/* ==========================================================================
+   MACOS WINDOW CHROME
+   ========================================================================== */
+.macos-window {
+  width: 100%; max-width: 1400px; height: 100%;
+  border-radius: 10px; /* Exact macOS standard */
+  box-shadow: var(--shadow-lg); /* Layered shadows + 0.5px border */
   overflow: hidden;
-}
-
-.pane { flex: 1; display: flex; flex-direction: column; height: 100%; }
-
-/* Apple Vibrancy Class (Blurred transparent background) */
-.mac-vibrancy {
-  background-color: var(--mac-vibrancy-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-/* ==========================================================================
-   LEFT PANE: MARKDOWN
-   ========================================================================== */
-.left-pane { 
-  max-width: 35%; 
-  background-color: var(--mac-sidebar-bg); 
-  border-right: 1px solid var(--mac-border-solid); 
-}
-
-/* Integrated Traffic Lights */
-.pane-header { 
-  height: 48px; display: flex; align-items: center; padding: 0 16px; gap: 20px;
-  border-bottom: 1px solid var(--mac-border);
-  z-index: 10;
-}
-
-.mac-traffic-lights { display: flex; gap: 8px; }
-.mac-btn {
-  width: 12px; height: 12px; border-radius: 50%;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
-}
-.mac-btn.close { background-color: var(--mac-red); }
-.mac-btn.minimize { background-color: var(--mac-yellow); }
-.mac-btn.maximize { background-color: var(--mac-green); }
-
-.doc-tag { font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; }
-
-.markdown-body { padding: 24px 32px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; font-size: 14px; line-height: 1.6; }
-.title-heading { font-size: 22px; color: var(--text-white); font-weight: 600; }
-.btn-refresh { background: var(--mac-border-solid); color: var(--text-main); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; align-self: flex-start; font-size: 12px; transition: background 0.2s;}
-.btn-refresh:hover { background: #333; color: var(--text-white); }
-.desc-content code { font-family: var(--font-mono); background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; }
-.border-divider { height: 1px; background: var(--mac-border-solid); margin: 10px 0; }
-.example-box { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; font-family: var(--font-mono); font-size: 13px; border: 1px solid var(--mac-border-solid); }
-.target-spec { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--term-yellow); background-color: rgba(250, 204, 21, 0.1); padding: 10px 14px; border-radius: 8px; }
-
-/* ==========================================================================
-   RIGHT PANE: MAC EDITOR & RUN BUTTON
-   ========================================================================== */
-.right-pane {
-  max-width: 65%;
-  background-color: var(--mac-bg-solid);
-}
-
-.mac-editor-toolbar {
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-right: 16px;
-  border-bottom: 1px solid var(--mac-border);
-  z-index: 10;
-}
-
-.mac-tabs { display: flex; height: 100%; }
-.mac-tab {
-  height: 100%; display: flex; align-items: center; gap: 8px; padding: 0 20px;
-  color: var(--text-white); font-size: 13px; font-family: var(--font-ui);
-  border-top: 2px solid var(--text-accent);
-  background-color: var(--mac-bg-solid);
-}
-
-.mac-actions { display: flex; align-items: center; gap: 12px; }
-
-.mac-icon-btn {
-  background: transparent; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-}
-.mac-icon-btn:hover { color: var(--text-white); }
-
-.action-divider { width: 1px; height: 16px; background-color: var(--mac-border-solid); }
-
-/* The Apple-style Play/Run Pill Button */
-.mac-play-pill {
-  background-color: rgba(74, 222, 128, 0.15); /* Translucent Green */
-  color: var(--term-green);
-  border: 1px solid rgba(74, 222, 128, 0.3);
-  padding: 6px 14px;
-  border-radius: 99px; /* Pill shape */
-  font-size: 12px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: var(--font-ui);
-}
-.mac-play-pill i { font-size: 14px; }
-.mac-play-pill:hover {
-  background-color: rgba(74, 222, 128, 0.25);
-  transform: translateY(-1px);
-}
-.mac-play-pill:active { transform: translateY(0) scale(0.95); }
-
-/* VS Code Editor */
-.editor-wrapper { flex: 1; position: relative; }
-
-.CodeMirror {
-  height: 100% !important; font-family: var(--font-mono) !important; font-size: 14px !important; line-height: 1.6 !important; background-color: transparent !important;
-}
-.CodeMirror-gutters { background-color: transparent !important; border-right: none !important; }
-.CodeMirror-linenumber { color: #6e7681 !important; padding-right: 16px !important; }
-
-/* IntelliSense Suggestions Popup */
-.CodeMirror-hints {
-  position: absolute; z-index: 200; font-family: var(--font-mono) !important; font-size: 13px !important;
-  background-color: #252526 !important; border: 1px solid var(--mac-border-solid) !important;
-  border-radius: 8px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05) !important; padding: 4px 0 !important;
-}
-.CodeMirror-hint { padding: 4px 16px !important; color: #cccccc !important; }
-li.CodeMirror-hint-active { background-color: #0060a0 !important; color: #ffffff !important; }
-
-/* ==========================================================================
-   MAC ZSH TERMINAL
-   ========================================================================== */
-.mac-terminal {
-  height: 35%;
-  border-top: 1px solid var(--mac-border-solid);
+  background: var(--bg-primary);
   display: flex;
   flex-direction: column;
 }
 
-.terminal-panel-header {
-  height: 38px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--mac-border); z-index: 10;
+/* Top Bar (Global Actions & Window Drag Zone) */
+.top-bar {
+  height: 52px; /* ~50px zone */
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg-vibrant);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 0.5px solid var(--border);
+  padding: 0 16px;
+  z-index: 10;
 }
-.term-tabs { display: flex; gap: 24px; height: 100%; }
-.term-tab {
-  font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: var(--text-muted); display: flex; align-items: center; cursor: pointer; position: relative;
-}
-.term-tab.active { color: var(--text-white); }
-.term-tab.active::after {
-  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background-color: var(--text-accent);
-}
-.term-actions { display: flex; gap: 12px; color: var(--text-muted); cursor: pointer; font-size: 15px; }
-.term-actions i:hover { color: var(--text-white); }
 
-/* Authentic ZSH Prompt */
-.terminal-body {
-  flex: 1; padding: 12px 20px; overflow-y: auto; font-family: var(--font-mono); font-size: 13px; line-height: 1.5; color: var(--text-main);
-  background-color: var(--mac-bg-solid);
+/* Traffic Lights */
+.traffic-lights { display: flex; gap: 8px; margin-left: 4px; width: 60px; }
+.dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.1);
 }
-.terminal-line { margin-bottom: 4px; white-space: pre-wrap; word-break: break-all; }
+.dot.red { background: var(--traffic-red); }
+.dot.yellow { background: var(--traffic-yellow); }
+.dot.green { background: var(--traffic-green); }
 
-.prompt-line { display: flex; gap: 8px; flex-wrap: wrap; }
-.prompt-user { color: var(--term-green); font-weight: 600; }
+.top-bar-center {
+  display: flex; align-items: center; gap: 6px;
+  font-weight: 500; font-size: 13px; color: var(--text-secondary);
+}
+
+/* Global Actions */
+.top-bar-actions { display: flex; gap: 8px; width: auto; align-items: center; }
+
+.btn {
+  height: 28px; padding: 0 12px; border-radius: 6px;
+  font-family: var(--font-system); font-size: 12px; font-weight: 500;
+  display: flex; align-items: center; gap: 6px; cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-out);
+  border: 0.5px solid transparent;
+}
+.btn-secondary {
+  background: var(--bg-secondary); color: var(--text-primary);
+  box-shadow: var(--shadow-sm); border-color: var(--border);
+}
+.btn-secondary:hover { background: var(--surface-hover); }
+
+.btn-primary {
+  background: var(--accent); color: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-primary:active { transform: scale(0.97); }
+
+/* Shortcut KBD */
+.kbd {
+  display: inline-flex; align-items: center; padding: 2px 6px; font-size: 11px;
+  font-family: var(--font-system); background: rgba(255,255,255,0.15);
+  border-radius: 4px; opacity: 0.9; margin-left: 4px;
+}
+
+/* ==========================================================================
+   APP LAYOUT (Sidebar + Main Content)
+   ========================================================================== */
+.app-layout { display: flex; flex: 1; overflow: hidden; }
+
+/* Sidebar */
+.sidebar {
+  width: 260px; flex-shrink: 0;
+  background: var(--bg-vibrant);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-right: 0.5px solid var(--border);
+  display: flex; flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 16px; display: flex; justify-content: space-between; align-items: center;
+}
+.section-caps {
+  font-size: 11px; font-weight: 600; color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.icon-btn {
+  background: transparent; border: none; color: var(--text-secondary);
+  cursor: pointer; font-size: 16px; border-radius: 4px; padding: 4px;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+.icon-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
+
+.sidebar-content { padding: 0 16px 24px; overflow-y: auto; }
+.title-1 { font-size: 22px; font-weight: 500; color: var(--text-primary); margin-bottom: 12px; line-height: 28px; }
+.body-text { font-size: 13px; line-height: 18px; color: var(--text-secondary); }
+.body-text code { font-family: var(--font-mono); background: var(--bg-tertiary); padding: 2px 4px; border-radius: 4px; }
+
+.divider { height: 0.5px; background: var(--border); margin: 24px 0; }
+
+.examples-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+.example-card {
+  background: var(--bg-secondary); border-radius: 8px; padding: 12px;
+  box-shadow: var(--shadow-sm); font-family: var(--font-mono); font-size: 11px; line-height: 1.5;
+}
+
+.info-callout {
+  display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+  background: rgba(10, 132, 255, 0.1); color: var(--accent);
+  border-radius: 8px; font-weight: 500; margin-top: 24px;
+}
+
+/* ==========================================================================
+   MAIN CONTENT AREA (Opaque, User's Data)
+   ========================================================================== */
+.main-content {
+  flex: 1; display: flex; flex-direction: column;
+  background: var(--bg-primary); /* Star of the show, solid background */
+}
+
+/* Editor */
+.editor-section { flex: 1; position: relative; }
+.CodeMirror {
+  height: 100% !important; font-family: var(--font-mono) !important;
+  font-size: 13px !important; line-height: 1.6 !important; background: transparent !important; color: var(--text-primary) !important;
+}
+.CodeMirror-gutters { background: transparent !important; border-right: none !important; }
+.CodeMirror-linenumber { color: var(--text-tertiary) !important; padding-right: 16px !important; }
+
+/* Popovers */
+.CodeMirror-hints {
+  position: absolute; z-index: 200; font-family: var(--font-mono) !important; font-size: 12px !important;
+  background: rgba(44,44,46,0.85) !important; backdrop-filter: blur(20px) !important;
+  border: 0.5px solid var(--border-strong) !important; border-radius: 8px !important;
+  box-shadow: var(--shadow-md) !important; padding: 4px 0 !important;
+}
+.CodeMirror-hint { padding: 4px 16px !important; color: var(--text-primary) !important; }
+li.CodeMirror-hint-active { background: var(--accent) !important; color: #fff !important; }
+
+/* ==========================================================================
+   BOTTOM PANEL (Mac Terminal)
+   ========================================================================== */
+.terminal-panel {
+  height: 35%; border-top: 0.5px solid var(--border); display: flex; flex-direction: column;
+}
+
+.panel-header {
+  height: 36px; display: flex; align-items: center; padding: 0 16px;
+  background: var(--bg-secondary); border-bottom: 0.5px solid var(--border); gap: 16px;
+}
+.tab {
+  font-size: 12px; color: var(--text-tertiary); font-weight: 500; cursor: pointer; height: 100%; display: flex; align-items: center; position: relative;
+}
+.tab.active { color: var(--text-primary); }
+.tab.active::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--text-primary); border-radius: 2px 2px 0 0;
+}
+.spacer { flex: 1; }
+.action-icon { color: var(--text-tertiary); cursor: pointer; }
+.action-icon:hover { color: var(--text-primary); }
+
+.terminal-content {
+  flex: 1; padding: 12px 16px; overflow-y: auto;
+  font-family: var(--font-mono); font-size: 12px; line-height: 1.6;
+}
+.term-line { margin-bottom: 4px; white-space: pre-wrap; word-break: break-all; }
+.text-tertiary { color: var(--text-tertiary); }
+
+.prompt-wrap { display: flex; gap: 8px; flex-wrap: wrap; }
+.prompt-host { color: var(--term-green); font-weight: 600; }
 .prompt-dir { color: var(--term-cyan); font-weight: 600; }
 
-.log-run { color: var(--text-white); }
+.log-cmd { color: var(--text-primary); }
 .log-pass { color: var(--term-green); }
 .log-fail { color: var(--term-red); }
 
 /* ==========================================================================
-   MAC STARTUP LOADER
+   OPTIMISTIC UI: TOAST NOTIFICATIONS
    ========================================================================== */
-#loading-screen {
-  position: fixed; inset: 0; z-index: 100;
-  background-color: #000;
-  display: flex; align-items: center; justify-content: center;
+#toast-container {
+  position: fixed; bottom: 24px; right: 24px; z-index: 1000;
+  display: flex; flex-direction: column; gap: 8px;
 }
-.mac-loader { display: flex; flex-direction: column; align-items: center; gap: 16px; }
-.mac-loader i { font-size: 56px; color: var(--text-white); }
-.mac-progress-track { width: 150px; height: 4px; background: #333; border-radius: 4px; overflow: hidden; }
-.mac-progress-fill { height: 100%; background: var(--text-white); width: 30%; animation: macLoad 1.5s infinite ease-in-out; }
-.startup-text { font-size: 12px; font-weight: 500; color: var(--text-muted); }
-@keyframes macLoad { 0% { transform: translateX(-100%); } 100% { transform: translateX(400%); } }
 
-/* Scrollbars - Mac Style */
-::-webkit-scrollbar { width: 10px; height: 10px; }
+.mac-toast {
+  background: rgba(50,50,50,0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 0.5px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 10px 16px;
+  box-shadow: var(--shadow-md);
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-system); font-size: 13px; color: #fff;
+  transform: translateY(100%); opacity: 0;
+  animation: toastEnter var(--duration-normal) var(--ease-spring) forwards;
+}
+.mac-toast.exit {
+  animation: toastExit var(--duration-normal) var(--ease-out) forwards;
+}
+
+@keyframes toastEnter {
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes toastExit {
+  to { transform: translateX(100%); opacity: 0; }
+}
+
+/* ==========================================================================
+   MACOS OVERLAY (Loading)
+   ========================================================================== */
+.macos-overlay {
+  position: fixed; inset: 0; background: var(--bg-primary); z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity var(--duration-normal) var(--ease-out);
+}
+.loader-box { text-align: center; }
+.spinner {
+  width: 24px; height: 24px; border: 2.5px solid var(--border-strong);
+  border-top-color: var(--text-primary); border-radius: 50%;
+  animation: spin 1s linear infinite; margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 12px; height: 12px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; border: 2px solid var(--mac-bg-solid); }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 6px; border: 3px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); border: 3px solid transparent; background-clip: padding-box; }

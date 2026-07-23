@@ -27,7 +27,7 @@ def __run_test_suite__(user_code, func_name, tests_json):
         exec(user_code, namespace)
 
         if func_name not in namespace:
-            raise Exception(f"NameError: Function '{func_name}' is not defined.")
+            raise Exception(f"NameError: Function '{func_name}' not defined.")
 
         func = namespace[func_name]
         tests = json.loads(tests_json)
