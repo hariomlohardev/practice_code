@@ -41,10 +41,21 @@ async function initializeApp() {
     autoCloseBrackets: true,
     extraKeys: {
       "Ctrl-Space": triggerRichIntelliSense,
-      "Cmd-Enter": handleExecute, 
+      "Cmd-Enter": handleExecute,
+      "Ctrl-Enter": handleExecute, 
       "Tab": function(cm) {
         if (cm.somethingSelected()) cm.indentSelection("add");
         else cm.replaceSelection("    ", "end");
+      }
+    }
+  });
+
+  // Global Shortcut Listener for Cmd/Ctrl + Enter from anywhere
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      if (!btnRun.disabled) {
+        handleExecute();
       }
     }
   });
@@ -93,14 +104,12 @@ function triggerRichIntelliSense(cm) {
   const token = cm.getTokenAt(cursor);
   const start = token.string.trim().toLowerCase();
   
-  // Filter dictionary based on typing
   const matches = PYTHON_INTELLISENSE.filter(item => item.text.startsWith(start));
   if (matches.length === 0) return;
 
   const hintObj = {
     list: matches.map(item => ({
       text: item.text,
-      // Custom Render function injected into CodeMirror Hint DOM
       render: function(element, self, data) {
         element.innerHTML = `
           <div class="hint-left">
@@ -169,7 +178,7 @@ async function handleExecute() {
   const result = await engine.run(code, currentProblem);
   
   btnRun.disabled = false;
-  btnRun.innerHTML = `<i class="ph-fill ph-play"></i> Run <span class="kbd">⌘Enter</span>`;
+  btnRun.innerHTML = `<i class="ph-fill ph-play"></i> Run <span class="kbd">⌘↵</span>`;
   
   renderTerminalResults(result);
 }

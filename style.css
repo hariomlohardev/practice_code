@@ -2,7 +2,6 @@
    MACOS DESIGN SYSTEM TOKENS (Apple Yellow Accent)
    ========================================================================== */
 :root {
-  /* Dark Mode Palette */
   --bg-primary: #1E1E1E;    
   --bg-secondary: #2C2C2E;  
   --bg-tertiary: #3A3A3C;   
@@ -12,38 +11,32 @@
   --text-secondary: #EBEBF5;
   --text-tertiary: #8E8E93;
 
-  /* Thin structural borders */
   --border: rgba(255, 255, 255, 0.1);
   --border-strong: rgba(255, 255, 255, 0.2);
 
   /* Apple's Famous Yellow Accent */
   --accent: #FFD60A;       
   --accent-hover: #FFDF33;
-  --accent-text: #1C1C1E; /* Dark text for yellow buttons */
+  --accent-text: #1C1C1E; 
   
   --surface-hover: rgba(255, 255, 255, 0.08);
 
-  /* Layered Shadows */
   --shadow-sm: 0 0 0 0.5px rgba(0,0,0,0.1), 0 2px 5px rgba(0,0,0,0.2);
   --shadow-md: 0 0 0 0.5px rgba(0,0,0,0.15), 0 8px 24px rgba(0,0,0,0.3);
   --shadow-lg: 0 0 0 0.5px rgba(0,0,0,0.2), 0 20px 60px rgba(0,0,0,0.5);
 
-  /* Traffic Lights */
   --traffic-red: #FF5F57;
   --traffic-yellow: #FEBC2E;
   --traffic-green: #28C840;
 
-  /* Terminal Colors */
   --term-green: #32D74B;
   --term-red: #FF453A;
   --term-cyan: #64D2FF;
 
-  /* Micro-animations */
   --ease-spring: cubic-bezier(0.25, 1, 0.5, 1);
   --duration-fast: 150ms;
   --duration-normal: 250ms;
 
-  /* Typography */
   --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
   --font-mono: "SF Mono", "Menlo", "Monaco", monospace;
 }
@@ -62,19 +55,19 @@ body {
 
 .hidden { display: none !important; }
 
-/* Desktop Environment */
+/* Desktop Environment - Expanded to fill more screen */
 .desktop-environment {
   width: 100vw; height: 100vh;
   display: flex; align-items: center; justify-content: center;
   background: radial-gradient(circle at center, #232332 0%, #000000 100%);
-  padding: 4vw;
+  padding: 1.5rem; /* Reduced padding to make app larger */
 }
 
 /* ==========================================================================
    MACOS WINDOW CHROME
    ========================================================================== */
 .macos-window {
-  width: 100%; max-width: 1500px; height: 100%;
+  width: 100%; height: 100%;
   border-radius: 12px;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
@@ -82,7 +75,6 @@ body {
   display: flex; flex-direction: column;
 }
 
-/* Top Bar (Apple Vibrancy) */
 .top-bar {
   height: 52px;
   display: flex; align-items: center; justify-content: space-between;
@@ -94,7 +86,6 @@ body {
   z-index: 20;
 }
 
-/* Traffic Lights */
 .traffic-lights { display: flex; gap: 8px; width: 60px; }
 .dot { width: 12px; height: 12px; border-radius: 50%; box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.15); }
 .dot.red { background: var(--traffic-red); }
@@ -106,7 +97,6 @@ body {
   font-weight: 500; font-size: 13px; color: var(--text-secondary);
 }
 
-/* Buttons */
 .top-bar-actions { display: flex; gap: 10px; align-items: center; }
 
 .btn {
@@ -122,7 +112,6 @@ body {
 }
 .btn-secondary:hover { background: rgba(255,255,255,0.15); }
 
-/* Primary Yellow Apple Button */
 .btn-primary {
   background: var(--accent); color: var(--accent-text);
   box-shadow: 0 2px 8px rgba(255, 214, 10, 0.2);
@@ -131,18 +120,19 @@ body {
 .btn-primary:active { transform: scale(0.96); }
 
 .kbd {
-  display: inline-flex; align-items: center; padding: 2px 6px; font-size: 10.5px;
+  display: inline-flex; align-items: center; padding: 2px 6px; font-size: 11px;
   font-family: var(--font-system); background: rgba(0,0,0,0.15);
-  border-radius: 4px; opacity: 0.8; margin-left: 4px; letter-spacing: 0.5px;
+  border-radius: 4px; opacity: 0.8; margin-left: 4px; font-weight: 500;
 }
 
 /* ==========================================================================
-   APP LAYOUT (Sidebar & Editor)
+   APP LAYOUT (WIDER Sidebar)
    ========================================================================== */
 .app-layout { display: flex; flex: 1; overflow: hidden; }
 
 .sidebar {
-  width: 300px; flex-shrink: 0;
+  width: 400px; /* Increased from 300px for larger Markdown pane */
+  flex-shrink: 0;
   background: var(--bg-vibrant);
   backdrop-filter: saturate(180%) blur(24px);
   -webkit-backdrop-filter: saturate(180%) blur(24px);
@@ -151,7 +141,7 @@ body {
 }
 
 .sidebar-header {
-  padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
 }
 .section-caps {
   font-size: 11px; font-weight: 600; color: var(--text-tertiary); letter-spacing: 0.04em;
@@ -165,9 +155,9 @@ body {
 .icon-btn:hover { background: var(--surface-hover); color: var(--text-primary); }
 .icon-btn:active { transform: scale(0.9); }
 
-.sidebar-content { padding: 0 20px 24px; overflow-y: auto; }
-.title-1 { font-size: 24px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; letter-spacing: -0.02em; }
-.body-text { font-size: 13px; line-height: 1.6; color: var(--text-secondary); }
+.sidebar-content { padding: 0 24px 24px; overflow-y: auto; }
+.title-1 { font-size: 26px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px; letter-spacing: -0.02em; line-height: 1.2;}
+.body-text { font-size: 14px; line-height: 1.6; color: var(--text-secondary); }
 .body-text code { font-family: var(--font-mono); background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
 
 .divider { height: 0.5px; background: var(--border); margin: 24px 0; }
@@ -175,60 +165,66 @@ body {
 .examples-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
 .example-card {
   background: rgba(255,255,255,0.04); border-radius: 8px; padding: 14px;
-  border: 0.5px solid var(--border); font-family: var(--font-mono); font-size: 11.5px; line-height: 1.5; color: var(--text-secondary);
+  border: 0.5px solid var(--border); font-family: var(--font-mono); font-size: 12px; line-height: 1.5; color: var(--text-secondary);
 }
 
 .info-callout {
-  display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+  display: flex; align-items: center; gap: 10px; padding: 14px;
   background: rgba(255, 214, 10, 0.1); color: var(--accent);
   border: 0.5px solid rgba(255, 214, 10, 0.2);
-  border-radius: 8px; font-weight: 500; margin-top: 24px;
+  border-radius: 8px; font-weight: 500; margin-top: 24px; font-size: 13.5px;
 }
 
 /* ==========================================================================
-   MAIN CONTENT AREA
+   MAIN CONTENT AREA (Editor & Selection Color)
    ========================================================================== */
 .main-content {
   flex: 1; display: flex; flex-direction: column;
   background: var(--bg-primary);
 }
 
-/* Editor */
 .editor-section { flex: 1; position: relative; }
+
 .CodeMirror {
   height: 100% !important; font-family: var(--font-mono) !important;
-  font-size: 14px !important; line-height: 1.6 !important; background: transparent !important; color: var(--text-primary) !important;
+  font-size: 14.5px !important; line-height: 1.6 !important; background: transparent !important; color: var(--text-primary) !important;
 }
 .CodeMirror-gutters { background: transparent !important; border-right: none !important; }
 .CodeMirror-linenumber { color: var(--text-tertiary) !important; padding-right: 16px !important; }
 
-/* ==========================================================================
-   XCODE / VS CODE RICH INTELLISENSE HINTS (The "Good Suggestions")
-   ========================================================================== */
-.CodeMirror-hints {
-  position: absolute; z-index: 200; font-family: var(--font-mono) !important; font-size: 12px !important;
-  background: rgba(30, 30, 30, 0.85) !important;
-  backdrop-filter: saturate(180%) blur(24px) !important;
-  -webkit-backdrop-filter: saturate(180%) blur(24px) !important;
-  border: 0.5px solid var(--border-strong) !important; border-radius: 8px !important;
-  box-shadow: var(--shadow-md) !important; padding: 6px !important;
-  max-width: 400px;
-  overflow: hidden;
+/* LIGHT APPLE YELLOW TEXT SELECTION */
+.CodeMirror-selected {
+  background: rgba(255, 214, 10, 0.25) !important; /* Soft Yellow Selection */
+}
+.CodeMirror-focused .CodeMirror-selected {
+  background: rgba(255, 214, 10, 0.35) !important;
+}
+.CodeMirror-line::selection,
+.CodeMirror-line > span::selection,
+.CodeMirror-line > span > span::selection {
+  background: rgba(255, 214, 10, 0.35) !important;
+}
+.CodeMirror-line::-moz-selection,
+.CodeMirror-line > span::-moz-selection,
+.CodeMirror-line > span > span::-moz-selection {
+  background: rgba(255, 214, 10, 0.35) !important;
 }
 
+/* Popovers */
+.CodeMirror-hints {
+  position: absolute; z-index: 200; font-family: var(--font-mono) !important; font-size: 12px !important;
+  background: rgba(44,44,46,0.85) !important; backdrop-filter: blur(20px) !important;
+  border: 0.5px solid var(--border-strong) !important; border-radius: 8px !important;
+  box-shadow: var(--shadow-md) !important; padding: 4px 0 !important;
+  max-width: 400px; overflow: hidden;
+}
 .CodeMirror-hint {
   padding: 6px 10px !important; color: var(--text-primary) !important;
   border-radius: 4px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
   transition: background 0.1s;
 }
+li.CodeMirror-hint-active { background: var(--accent) !important; color: var(--accent-text) !important; }
 
-/* Active Highlight is Apple Yellow */
-li.CodeMirror-hint-active {
-  background: var(--accent) !important;
-  color: var(--accent-text) !important;
-}
-
-/* Custom Structure injected by JS */
 .hint-left { display: flex; align-items: center; gap: 8px; font-weight: 500; }
 .hint-icon { font-size: 14px; opacity: 0.8; }
 .hint-desc { font-family: var(--font-system); font-size: 11px; opacity: 0.7; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
@@ -283,9 +279,7 @@ li.CodeMirror-hint-active {
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border: 0.5px solid var(--border-strong);
-  border-radius: 8px;
-  padding: 12px 18px;
-  box-shadow: var(--shadow-md);
+  border-radius: 8px; padding: 12px 18px; box-shadow: var(--shadow-md);
   display: flex; align-items: center; gap: 12px;
   font-family: var(--font-system); font-size: 13px; font-weight: 500; color: #fff;
   transform: translateY(100%); opacity: 0;
