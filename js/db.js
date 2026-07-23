@@ -39,18 +39,47 @@ const AppDB = (() => {
   }
 
   function getTasksHistory() {
-    try { return JSON.parse(localStorage.getItem(KEYS.TASKS_HISTORY)) || []; } 
-    catch (e) { return []; }
+    try { 
+      const tasks = JSON.parse(localStorage.getItem(KEYS.TASKS_HISTORY)) || []; 
+      return tasks.map(t => ({ ...t, completed: !!t.completed }));
+    } catch (e) { 
+      return []; 
+    }
   }
 
   function saveTask(taskObj) {
     const tasks = getTasksHistory();
     const existingIndex = tasks.findIndex(t => t.id === taskObj.id);
+    const newTask = { ...taskObj, completed: taskObj.completed || false };
+
     if (existingIndex >= 0) {
-      tasks[existingIndex] = taskObj;
+      tasks[existingIndex] = newTask;
     } else {
-      tasks.unshift(taskObj);
+      tasks.unshift(newTask);
     }
+    localStorage.setItem(KEYS.TASKS_HISTORY, JSON.stringify(tasks));
+  }
+
+  /**
+   * Toggle task completed/incomplete status
+   */
+  function toggleTaskStatus(taskId) {
+    const tasks = getTasksHistory();
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      task.completed = !task.completed;
+      localStorage.setItem(KEYS.TASKS_HISTORY, JSON.stringify(tasks));
+      return task.completed;
+    }
+    return false;
+  }
+
+  /**
+   * Delete task from library
+   */
+  function deleteTask(taskId) {
+    let tasks = getTasksHistory();
+    tasks = tasks.filter(t => t.id !== taskId);
     localStorage.setItem(KEYS.TASKS_HISTORY, JSON.stringify(tasks));
   }
 
@@ -62,6 +91,8 @@ const AppDB = (() => {
     getActiveState,
     saveActiveState,
     getTasksHistory,
-    saveTask
+    saveTask,
+    toggleTaskStatus,
+    deleteTask
   };
 })();

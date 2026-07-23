@@ -42,11 +42,50 @@
   <!-- Toast Container -->
   <div id="toast-container"></div>
 
+  <!-- macOS Tasks & Files Library Modal -->
+  <div id="tasks-modal" class="mac-modal-backdrop hidden">
+    <div class="mac-tasks-window">
+      
+      <!-- Window Header -->
+      <div class="mac-modal-header">
+        <div class="mac-traffic-lights">
+          <div class="dot red" id="btn-close-tasks-dot" title="Close"></div>
+        </div>
+        <div class="ai-header-title">
+          <i class="ph-fill ph-folder-open" style="color: var(--accent);"></i>
+          <span>Tasks & Workspace Library</span>
+        </div>
+        <button id="btn-close-tasks" class="icon-btn"><i class="ph ph-x"></i></button>
+      </div>
+
+      <!-- Toolbar: Filter Segmented Controls + Search -->
+      <div class="tasks-toolbar">
+        <div class="mac-segmented-control" style="width: 280px;">
+          <button class="seg-btn active" id="filter-task-all">All</button>
+          <button class="seg-btn" id="filter-task-incomplete">Incomplete</button>
+          <button class="seg-btn" id="filter-task-completed">Completed</button>
+        </div>
+
+        <div class="search-wrap">
+          <i class="ph ph-magnifying-glass search-icon"></i>
+          <input type="text" id="task-search-input" class="mac-input task-search" placeholder="Search tasks..." autocomplete="off" />
+        </div>
+      </div>
+
+      <!-- Task List Area -->
+      <div class="tasks-body">
+        <div id="tasks-list-container" class="tasks-list">
+          <!-- Dynamically populated task rows -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- macOS System Settings Window -->
   <div id="settings-modal" class="mac-modal-backdrop hidden">
     <div class="mac-settings-window">
       
-      <!-- Settings Header Bar -->
       <div class="mac-modal-header">
         <div class="mac-traffic-lights">
           <div class="dot red" id="btn-close-settings-dot" title="Close"></div>
@@ -55,10 +94,7 @@
         <button id="btn-close-settings" class="icon-btn"><i class="ph ph-x"></i></button>
       </div>
 
-      <!-- Settings Body -->
       <div class="mac-settings-body">
-        
-        <!-- Sidebar Navigation -->
         <div class="settings-sidebar">
           <button class="settings-nav-item active" data-tab="creds">
             <i class="ph-fill ph-key"></i>
@@ -68,9 +104,7 @@
             <i class="ph-fill ph-sliders-horizontal"></i>
             <span>Customize AI</span>
           </button>
-          
           <div class="settings-nav-divider"></div>
-          
           <button class="settings-nav-item" data-tab="about">
             <i class="ph-fill ph-info"></i>
             <span>About Studio</span>
@@ -81,46 +115,34 @@
           </button>
         </div>
 
-        <!-- Detail Content Area -->
         <div class="settings-content">
-          
-          <!-- Panel 1: Credentials -->
           <div id="sec-creds" class="settings-panel">
             <h2 class="panel-title">AI Credentials</h2>
-
             <div class="google-notice-card">
               <i class="ph-fill ph-star notice-star"></i>
               <div class="notice-text">
                 <strong>Google Gemini Support</strong>
-                <span>Enter your API key and any model name from Google AI Studio.</span>
+                <span>Enter your API key and model identifier from Google AI Studio.</span>
               </div>
             </div>
-
-            <!-- API Key Input -->
             <div class="form-group">
               <label class="form-label">Google Gemini API Key</label>
               <input type="password" id="setting-api-key" class="mac-input" placeholder="AIzaSy..." autocomplete="off" />
               <span id="key-error-msg" class="form-error hidden">Invalid Google API Key. Please check and try again.</span>
             </div>
-
-            <!-- Custom Model Name Input -->
             <div class="form-group">
               <label class="form-label">Model Name / Identifier</label>
               <input type="text" id="setting-model-input" class="mac-input" placeholder="gemini-3.6-flash" autocomplete="off" />
               <span class="text-tertiary" style="font-size: 11px; margin-top: 2px;">
-                Default: <code>gemini-3.6-flash</code>. You can type any model string from Google AI Studio.
+                Default: <code>gemini-3.6-flash</code>. You can type any model name from Google AI Studio.
               </span>
             </div>
-            <!-- Preset Model Picker List -->
             <div class="form-group">
               <label class="form-label">Quick Select Presets</label>
-              <div id="model-picker-list" class="mac-model-picker">
-                <!-- Dynamically Populated Cards -->
-              </div>
+              <div id="model-picker-list" class="mac-model-picker"></div>
             </div>
           </div>
 
-          <!-- Panel 2: Customize AI -->
           <div id="sec-custom" class="settings-panel hidden">
             <h2 class="panel-title">AI Customization</h2>
             <div class="form-group">
@@ -141,7 +163,6 @@
             </div>
           </div>
 
-          <!-- Panel 3: About Studio -->
           <div id="sec-about" class="settings-panel hidden">
             <div class="about-hero">
               <i class="ph-fill ph-apple-logo about-icon"></i>
@@ -155,7 +176,6 @@
             </div>
           </div>
 
-          <!-- Panel 4: Creator & GitHub Links -->
           <div id="sec-creator" class="settings-panel hidden">
             <h2 class="panel-title">Creator & Open Source</h2>
             <p class="body-text">Crafted with Apple Design Guidelines for high-efficiency browser Python development.</p>
@@ -170,14 +190,12 @@
               </a>
             </div>
           </div>
-
         </div>
       </div>
 
       <div class="mac-modal-footer">
         <button id="btn-save-settings" class="btn btn-primary">Save Changes</button>
       </div>
-
     </div>
   </div>
 
@@ -214,7 +232,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -302,6 +319,7 @@
   <script src="js/db.js"></script>
   <script src="js/jupy-ai.js"></script>
   <script src="js/ai-ui.js"></script>
+  <script src="js/tasks-ui.js"></script> <!-- NEW FILE -->
   <script src="js/intellisense.js"></script>
   <script src="js/mock-ai.js"></script>
   <script src="js/engine.js"></script>

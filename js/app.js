@@ -44,7 +44,7 @@ async function initializeApp() {
     }, 1000);
   });
 
-  // Global Shortcut: Cmd/Ctrl + Enter
+  // Global Keyboard Shortcut: Cmd/Ctrl + Enter
   document.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
@@ -58,8 +58,9 @@ async function initializeApp() {
     }
   });
 
-  // Initialize AI UI & Task Loader Callback
+  // Initialize AI UI & Tasks Library UI
   AIUI.init(loadTaskIntoWorkspace);
+  TasksUI.init(loadTaskIntoWorkspace);
 
   try {
     await engine.init();
@@ -75,7 +76,7 @@ async function initializeApp() {
     showToast("Engine Error: " + err.message, "ph-warning-circle");
   }
 
-  // Bind Control Buttons
+  // Bind Buttons
   btnRun.addEventListener('click', triggerRunFromTerminal);
   btnReset.addEventListener('click', () => {
     editor.setValue(currentProblem.boilerplate);
@@ -88,7 +89,7 @@ async function initializeApp() {
     showToast("Loaded Next Problem", "ph-folder-open");
   });
 
-  // Settings Events
+  // Settings Controls
   document.getElementById('btn-settings-toggle').addEventListener('click', () => {
     SettingsManager.init();
     document.getElementById('settings-modal').classList.remove('hidden');
@@ -110,7 +111,7 @@ window.getActiveProblem = function() {
 };
 
 /**
- * Loads an AI Generated Task directly into the Editor Workspace
+ * Loads a task directly into the Editor Workspace
  */
 function loadTaskIntoWorkspace(taskObj) {
   currentProblem = taskObj;
@@ -165,6 +166,16 @@ async function executeCode() {
   btnRun.innerHTML = `<i class="ph-fill ph-play"></i> Run <span class="kbd">⌘↵</span>`;
 
   TerminalManager.renderTestResults(result, currentProblem.functionName);
+
+  // If all tests passed, auto-mark task as completed!
+  if (result.results && result.results.length > 0 && result.results.every(r => r.passed)) {
+    if (currentProblem.id) {
+      currentProblem.completed = true;
+      AppDB.saveTask(currentProblem);
+      showToast("Challenge Completed! Marked in Library", "ph-check-circle");
+    }
+  }
+
   TerminalManager.appendPrompt(handleTerminalCommand);
 }
 
