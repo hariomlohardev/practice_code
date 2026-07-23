@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>macOS Developer Studio</title>
   
   <!-- Phosphor Icons -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   
   <!-- CodeMirror CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/nord.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/nord.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css" />
   
   <!-- CodeMirror Core & Addons -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
@@ -20,13 +20,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
   
-  <!-- Pyodide -->
+  <!-- Pyodide Core -->
   <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
   
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
+  <!-- Loading Overlay -->
   <div id="loading-screen" class="macos-overlay">
     <div class="loader-box">
       <div class="spinner"></div>
@@ -34,8 +35,10 @@
     </div>
   </div>
 
+  <!-- Toast Container -->
   <div id="toast-container"></div>
 
+  <!-- Desktop Environment -->
   <div class="desktop-environment">
     <div id="macos-app" class="macos-window hidden">
       
@@ -95,19 +98,19 @@
             <textarea id="code-editor"></textarea>
           </div>
 
-          <!-- Bottom Panel: Production macOS Terminal -->
+          <!-- Bottom Panel: Terminal & Pytest Tabs -->
           <div class="terminal-panel">
             <div class="panel-header">
-              <span class="tab active">zsh</span>
-              <span class="tab">pytest</span>
+              <span class="tab active" id="tab-zsh"><i class="ph ph-terminal-window"></i> zsh</span>
+              <span class="tab" id="tab-pytest"><i class="ph ph-check-circle"></i> pytest</span>
               <div class="spacer"></div>
-              <i class="ph ph-trash action-icon" id="btn-clear-term" title="Clear Terminal (⌘K)"></i>
+              <i class="ph ph-trash action-icon" id="btn-clear-term" title="Clear Console (⌘K)"></i>
             </div>
             
             <div id="terminal-screen" class="terminal-content">
-              <div class="term-line text-tertiary">Last login: <span id="login-time"></span> on ttys001</div>
+              <div class="term-line text-tertiary">Session started: <span id="login-time"></span> on ttys001</div>
               <div id="terminal-log-stream">
-                <!-- Terminal stream appended here -->
+                <!-- Terminal stream -->
               </div>
             </div>
           </div>
@@ -117,6 +120,8 @@
     </div>
   </div>
 
+  <!-- Dedicated IntelliSense Engine -->
+  <script src="python-intellisense.js"></script>
   <script src="mock-ai.js"></script>
   <script src="engine.js"></script>
   <script src="app.js"></script>

@@ -1,6 +1,7 @@
 const engine = new PythonEngine();
 let editor = null;
 let currentProblem = null;
+let activeTab = 'zsh'; // 'zsh' | 'pytest'
 
 const loadingScreen = document.getElementById('loading-screen');
 const appContainer = document.getElementById('macos-app');
@@ -12,26 +13,16 @@ const btnReset = document.getElementById('btn-reset');
 const btnNext = document.getElementById('btn-next-problem');
 const btnClearTerm = document.getElementById('btn-clear-term');
 
-document.getElementById('login-time').innerText = new Date().toLocaleTimeString([], {weekday: 'short', hour: '2-digit', minute:'2-digit'});
+const tabZsh = document.getElementById('tab-zsh');
+const tabPytest = document.getElementById('tab-pytest');
 
-const PYTHON_INTELLISENSE = [
-  { text: "print", type: "function", icon: "ph-function", desc: "Print values to stream" },
-  { text: "len", type: "function", icon: "ph-function", desc: "Return length of object" },
-  { text: "range", type: "function", icon: "ph-function", desc: "Sequence of numbers" },
-  { text: "enumerate", type: "function", icon: "ph-function", desc: "Index, value iterator" },
-  { text: "def", type: "keyword", icon: "ph-code", desc: "Define a function" },
-  { text: "return", type: "keyword", icon: "ph-code", desc: "Exit and return value" },
-  { text: "if", type: "keyword", icon: "ph-git-branch", desc: "Conditional statement" },
-  { text: "else", type: "keyword", icon: "ph-git-branch", desc: "Alternative condition" },
-  { text: "for", type: "keyword", icon: "ph-arrows-clockwise", desc: "Loop sequence" },
-  { text: "while", type: "keyword", icon: "ph-arrows-clockwise", desc: "Loop while true" },
-  { text: "import", type: "keyword", icon: "ph-package", desc: "Import a module" }
-];
+document.getElementById('login-time').innerText = new Date().toLocaleTimeString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' });
 
 async function initializeApp() {
   currentProblem = getRandomAIProblem();
   renderProblem(currentProblem);
 
+  // Initialize CodeMirror with Custom Python IntelliSense Engine
   editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
     mode: "python",
     theme: "nord",
@@ -40,7 +31,7 @@ async function initializeApp() {
     matchBrackets: true,
     autoCloseBrackets: true,
     extraKeys: {
-      "Ctrl-Space": triggerRichIntelliSense,
+      "Ctrl-Space": (cm) => cm.showHint({ hint: PythonIntelliSense.getHints, completeSingle: false }),
       "Tab": function(cm) {
         if (cm.somethingSelected()) cm.indentSelection("add");
         else cm.replaceSelection("    ", "end");
@@ -48,7 +39,7 @@ async function initializeApp() {
     }
   });
 
-  // Global Keyboard Shortcuts (Cmd/Ctrl + Enter)
+  // Global Keyboard Shortcut: Cmd/Ctrl + Enter
   document.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
@@ -56,9 +47,10 @@ async function initializeApp() {
     }
   });
 
+  // Trigger IntelliSense automatically on typing
   editor.on("inputRead", function(cm, change) {
-    if (change.origin === "+input" && /^[a-zA-Z_]*$/.test(change.text[0])) {
-      triggerRichIntelliSense(cm);
+    if (change.origin === "+input" && /^[a-zA-Z_.]*$/.test(change.text[0])) {
+      cm.showHint({ hint: PythonIntelliSense.getHints, completeSingle: false });
     }
   });
 
@@ -68,16 +60,17 @@ async function initializeApp() {
     await engine.init();
     loadingScreen.style.opacity = '0';
     setTimeout(() => {
-        loadingScreen.classList.add('hidden');
-        appContainer.classList.remove('hidden');
-        editor.refresh();
-        showToast("System Ready", "ph-check-circle");
-        appendPrompt();
+      loadingScreen.classList.add('hidden');
+      appContainer.classList.remove('hidden');
+      editor.refresh();
+      showToast("System Ready", "ph-check-circle");
+      appendPrompt();
     }, 300);
   } catch (err) {
     showToast("Engine Error: " + err.message, "ph-warning-circle");
   }
 
+  // Action Bindings
   btnRun.addEventListener('click', triggerRunFromTerminal);
   
   btnReset.addEventListener('click', () => {
@@ -99,6 +92,10 @@ async function initializeApp() {
     appendPrompt();
   });
 
+  // Terminal Tab Click Fix (Switching between zsh and pytest mode)
+  tabZsh.addEventListener('click', () => switchTerminalTab('zsh'));
+  tabPytest.addEventListener('click', () => switchTerminalTab('pytest'));
+
   document.querySelector('.terminal-content').addEventListener('click', (e) => {
     if (e.target.tagName !== 'INPUT') {
       const input = termLogStream.querySelector('.term-input');
@@ -107,32 +104,17 @@ async function initializeApp() {
   });
 }
 
-function triggerRichIntelliSense(cm) {
-  const cursor = cm.getCursor();
-  const token = cm.getTokenAt(cursor);
-  const start = token.string.trim().toLowerCase();
-  
-  const matches = PYTHON_INTELLISENSE.filter(item => item.text.startsWith(start));
-  if (matches.length === 0) return;
-
-  const hintObj = {
-    list: matches.map(item => ({
-      text: item.text,
-      render: function(element) {
-        element.innerHTML = `
-          <div class="hint-left">
-            <i class="ph-fill ${item.icon} hint-icon"></i>
-            <span>${item.text}</span>
-          </div>
-          <div class="hint-desc">${item.desc}</div>
-        `;
-      }
-    })),
-    from: CodeMirror.Pos(cursor.line, token.start),
-    to: CodeMirror.Pos(cursor.line, token.end)
-  };
-
-  cm.showHint({ hint: () => hintObj, completeSingle: false });
+function switchTerminalTab(tabName) {
+  activeTab = tabName;
+  if (tabName === 'zsh') {
+    tabZsh.classList.add('active');
+    tabPytest.classList.remove('active');
+  } else {
+    tabPytest.classList.add('active');
+    tabZsh.classList.remove('active');
+    // Clicking Pytest Tab automatically triggers test execution
+    triggerRunFromTerminal('pytest main.py');
+  }
 }
 
 function showToast(message, icon) {
@@ -162,7 +144,6 @@ function getZshPrompt() {
   return `<span class="prompt-host">macbook-pro</span> <span class="prompt-dir">~</span> %`;
 }
 
-/* Interactive & Clean Terminal Stream */
 function appendPrompt() {
   const wrapper = document.createElement('div');
   wrapper.className = 'term-line prompt-wrap';
@@ -178,8 +159,6 @@ function appendPrompt() {
   input.addEventListener('keydown', async (e) => {
     if (e.key === 'Enter') {
       const cmd = input.value.trim();
-      
-      // Convert active prompt line to static text
       wrapper.innerHTML = `${getZshPrompt()} <span class="log-cmd">${escapeHtml(cmd)}</span>`;
       
       if (cmd === '') {
@@ -187,7 +166,7 @@ function appendPrompt() {
       } else if (cmd === 'clear') {
         termLogStream.innerHTML = '';
         appendPrompt();
-      } else if (/^python3?(?:\s+main\.py)?$/.test(cmd) || cmd === './main.py') {
+      } else if (/^(python3?|pytest)(?:\s+main\.py)?$/.test(cmd) || cmd === './main.py') {
         await executeCode();
       } else {
         const cmdName = cmd.split(' ')[0];
@@ -202,11 +181,18 @@ function appendPrompt() {
   });
 }
 
-function triggerRunFromTerminal() {
+function triggerRunFromTerminal(customCmd) {
   const activeInput = termLogStream.querySelector('.term-input');
   if (activeInput) {
-    activeInput.value = 'python3 main.py';
+    activeInput.value = customCmd || 'python3 main.py';
     activeInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+  } else {
+    // If input not available, create line directly
+    const wrapper = document.createElement('div');
+    wrapper.className = 'term-line prompt-wrap';
+    wrapper.innerHTML = `${getZshPrompt()} <span class="log-cmd">${customCmd || 'python3 main.py'}</span>`;
+    termLogStream.appendChild(wrapper);
+    executeCode();
   }
 }
 
@@ -225,7 +211,7 @@ async function executeCode() {
 }
 
 function renderTerminalResults(result) {
-  // 1. Output print() stdout directly without extra spacing
+  // 1. Standard stdout
   if (result.stdout) {
     const cleanStdout = result.stdout.replace(/\n$/, '');
     const div = document.createElement('div');
@@ -234,7 +220,7 @@ function renderTerminalResults(result) {
     termLogStream.appendChild(div);
   }
 
-  // 2. Output python tracebacks
+  // 2. Error tracebacks
   if (result.stderr) {
     const cleanStderr = result.stderr.replace(/\n$/, '');
     const div = document.createElement('div');
@@ -243,7 +229,7 @@ function renderTerminalResults(result) {
     termLogStream.appendChild(div);
   }
 
-  // 3. Pytest-Style Structured Test Cases Output
+  // 3. Structured Pytest-style Test Evaluation
   if (result.func_found === false) {
     const div = document.createElement('div');
     div.className = 'term-line log-fail';
@@ -252,7 +238,6 @@ function renderTerminalResults(result) {
   } else if (result.results && result.results.length > 0) {
     let passedCount = 0;
     
-    // Header line
     const header = document.createElement('div');
     header.className = 'term-line text-tertiary';
     header.style.marginTop = '4px';

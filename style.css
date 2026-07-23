@@ -1,5 +1,5 @@
 /* ==========================================================================
-   MACOS DESIGN SYSTEM TOKENS
+   MACOS DESIGN SYSTEM TOKENS (Apple Yellow Accent)
    ========================================================================== */
 :root {
   --bg-primary: #1E1E1E;    
@@ -170,7 +170,7 @@ body {
 }
 
 /* ==========================================================================
-   MAIN CONTENT AREA (Editor & Selection Color)
+   MAIN CONTENT AREA & EDITOR
    ========================================================================== */
 .main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-primary); }
 
@@ -188,25 +188,48 @@ body {
 .CodeMirror-focused .CodeMirror-selected { background: rgba(38, 79, 120, 0.8) !important; }
 .CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection { background: rgba(38, 79, 120, 0.8) !important; }
 
-/* Autocomplete Popover */
+/* ==========================================================================
+   APPLE VIBRANCY INTELLISENSE POPUP (PyCharm/VS Code Style)
+   ========================================================================== */
 .CodeMirror-hints {
   position: absolute; z-index: 200; font-family: var(--font-mono) !important; font-size: 12px !important;
-  background: rgba(44,44,46,0.92) !important; backdrop-filter: blur(20px) !important;
-  border: 0.5px solid var(--border-strong) !important; border-radius: 8px !important;
-  box-shadow: var(--shadow-md) !important; padding: 4px 0 !important; max-width: 400px; overflow: hidden;
+  background: rgba(32, 32, 36, 0.88) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 0.5px solid var(--border-strong) !important; border-radius: 10px !important;
+  box-shadow: var(--shadow-lg) !important; padding: 6px !important; max-width: 480px; overflow: hidden;
 }
-.CodeMirror-hint {
-  padding: 6px 10px !important; color: var(--text-primary) !important;
-  border-radius: 4px; display: flex; align-items: center; justify-content: space-between; gap: 20px; transition: background 0.1s;
-}
-li.CodeMirror-hint-active { background: var(--accent) !important; color: var(--accent-text) !important; }
 
-.hint-left { display: flex; align-items: center; gap: 8px; font-weight: 500; }
-.hint-icon { font-size: 14px; opacity: 0.8; }
-.hint-desc { font-family: var(--font-system); font-size: 11px; opacity: 0.7; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+.cm-hint-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 6px 10px !important; border-radius: 6px; transition: background 0.1s;
+}
+
+li.CodeMirror-hint-active {
+  background: rgba(255, 214, 10, 0.18) !important;
+  border: 0.5px solid rgba(255, 214, 10, 0.3);
+}
+
+.hint-main { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+.hint-name { color: var(--text-primary); }
+.hint-sig {
+  font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px;
+}
+
+/* Badges */
+.hint-badge {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 2px 5px;
+  border-radius: 4px; letter-spacing: 0.5px;
+}
+.badge-fn { background: rgba(100, 210, 255, 0.2); color: #64D2FF; }
+.badge-kw { background: rgba(255, 159, 10, 0.2); color: #FF9F0A; }
+.badge-prop { background: rgba(218, 143, 255, 0.2); color: #DA8FFF; }
+.badge-snip { background: rgba(48, 209, 88, 0.2); color: #30D158; }
+.badge-cls { background: rgba(255, 69, 58, 0.2); color: #FF453A; }
 
 /* ==========================================================================
-   TERMINAL CONSOLE (Aligned & Clean)
+   TERMINAL CONSOLE
    ========================================================================== */
 .terminal-panel {
   height: 38%; border-top: 0.5px solid var(--border); display: flex; flex-direction: column; cursor: text;
@@ -216,9 +239,15 @@ li.CodeMirror-hint-active { background: var(--accent) !important; color: var(--a
   height: 36px; display: flex; align-items: center; padding: 0 16px;
   background: var(--bg-secondary); border-bottom: 0.5px solid var(--border); gap: 16px; cursor: default;
 }
-.tab { font-size: 12px; color: var(--text-tertiary); font-weight: 500; cursor: pointer; height: 100%; display: flex; align-items: center; position: relative; letter-spacing: 0.5px; }
-.tab.active { color: var(--text-primary); }
+.tab {
+  font-size: 12px; color: var(--text-tertiary); font-weight: 500; cursor: pointer;
+  height: 100%; display: flex; align-items: center; gap: 6px; position: relative; letter-spacing: 0.3px;
+  transition: color var(--duration-fast);
+}
+.tab:hover { color: var(--text-secondary); }
+.tab.active { color: var(--text-primary); font-weight: 600; }
 .tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--accent); border-radius: 2px 2px 0 0; }
+
 .spacer { flex: 1; }
 .action-icon { color: var(--text-tertiary); cursor: pointer; font-size: 15px; transition: color 0.15s; }
 .action-icon:hover { color: var(--text-primary); }
@@ -229,19 +258,10 @@ li.CodeMirror-hint-active { background: var(--accent) !important; color: var(--a
   color: var(--text-primary); letter-spacing: -0.01em;
 }
 
-/* Strict Clean Lines - Zero Random Gaps */
-.term-line {
-  margin: 0; padding: 0;
-  white-space: pre-wrap; word-break: break-all;
-}
-
+.term-line { margin: 0; padding: 0; white-space: pre-wrap; word-break: break-all; }
 .text-tertiary { color: var(--text-tertiary); }
 
-/* Perfect Baseline Prompt Input Line */
-.prompt-wrap {
-  display: flex; align-items: baseline; gap: 6px;
-  margin: 0; padding: 0;
-}
+.prompt-wrap { display: flex; align-items: baseline; gap: 6px; margin: 0; padding: 0; }
 .prompt-host { color: var(--term-green); font-weight: 600; }
 .prompt-dir { color: var(--term-cyan); font-weight: 600; }
 
@@ -252,18 +272,11 @@ li.CodeMirror-hint-active { background: var(--accent) !important; color: var(--a
 .term-input {
   background: transparent; border: none; color: var(--text-primary);
   font-family: var(--font-mono); font-size: 12px; line-height: 1.45;
-  outline: none; flex: 1; padding: 0; margin: 0;
-  caret-color: var(--accent);
+  outline: none; flex: 1; padding: 0; margin: 0; caret-color: var(--accent);
 }
 
-/* Tabular Dot Leaders for Pytest-style test results */
-.test-row {
-  display: flex; align-items: center; gap: 8px; margin: 1px 0;
-}
-.test-row .dots {
-  flex: 1; border-bottom: 1px dotted rgba(255, 255, 255, 0.15); height: 0.8em;
-}
-.test-time { font-size: 11px; }
+.test-row { display: flex; align-items: center; gap: 8px; margin: 1px 0; }
+.test-row .dots { flex: 1; border-bottom: 1px dotted rgba(255, 255, 255, 0.15); height: 0.8em; }
 
 /* ==========================================================================
    TOAST NOTIFICATIONS
@@ -282,7 +295,7 @@ li.CodeMirror-hint-active { background: var(--accent) !important; color: var(--a
 @keyframes toastExit { to { transform: translateX(120%); opacity: 0; } }
 
 /* ==========================================================================
-   MACOS OVERLAY (Loading)
+   MACOS OVERLAY
    ========================================================================== */
 .macos-overlay {
   position: fixed; inset: 0; background: var(--bg-primary); z-index: 200;
