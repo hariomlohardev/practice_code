@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>macOS Developer Tool</title>
+  <title>macOS Developer Studio</title>
   
-  <!-- Phosphor Icons (Monoline 16-20px as per spec) -->
+  <!-- Phosphor Icons (Monoline Apple-style icons) -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   
   <!-- CodeMirror CSS -->
@@ -13,13 +13,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/nord.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
   
-  <!-- CodeMirror Core -->
+  <!-- CodeMirror Core & Addons -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/python-hint.min.js"></script>
   
   <!-- Pyodide -->
   <script src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js"></script>
@@ -28,18 +27,18 @@
 </head>
 <body>
 
-  <!-- Loading State (Native macOS Overlay Style) -->
+  <!-- Loading Overlay -->
   <div id="loading-screen" class="macos-overlay">
     <div class="loader-box">
       <div class="spinner"></div>
-      <div class="loader-text">Initializing Engine...</div>
+      <div class="loader-text">Waking up Engine...</div>
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
+  <!-- Native macOS Toast Container -->
   <div id="toast-container"></div>
 
-  <!-- macOS Desktop Environment -->
+  <!-- Desktop Environment -->
   <div class="desktop-environment">
     
     <!-- Native macOS App Window -->
@@ -53,19 +52,17 @@
           <div class="dot green"></div>
         </div>
         
-        <!-- Center Context -->
         <div class="top-bar-center">
-          <i class="ph ph-folder"></i>
+          <i class="ph-fill ph-folder" style="color: var(--accent);"></i>
           <span class="file-title">main.py</span>
         </div>
 
-        <!-- Global Actions -->
         <div class="top-bar-actions">
           <button id="btn-reset" class="btn btn-secondary">
             <i class="ph ph-arrow-counter-clockwise"></i> Reset
           </button>
           <button id="btn-run" class="btn btn-primary">
-            <i class="ph ph-play-fill"></i> Run <span class="kbd">⌘Enter</span>
+            <i class="ph-fill ph-play"></i> Run <span class="kbd">⌘Enter</span>
           </button>
         </div>
       </header>
@@ -73,10 +70,10 @@
       <!-- Main Layout -->
       <div class="app-layout">
         
-        <!-- Sidebar Navigation/Context (260px vibrant) -->
+        <!-- Sidebar Navigation/Context -->
         <aside class="sidebar">
           <div class="sidebar-header">
-            <span class="section-caps">PROBLEM SPECIFICATION</span>
+            <span class="section-caps">SPECIFICATION</span>
             <button id="btn-next-problem" class="icon-btn" title="Next Problem">
               <i class="ph ph-arrows-clockwise"></i>
             </button>
@@ -92,12 +89,13 @@
             <div id="problem-examples" class="examples-grid"></div>
             
             <div class="info-callout">
-              <i class="ph ph-clock"></i> Target Constraint: &le; <span id="target-time">0</span>ms
+              <i class="ph-fill ph-timer"></i> 
+              <span>Target: &le; <span id="target-time">0</span>ms</span>
             </div>
           </div>
         </aside>
 
-        <!-- Main Content Area (Opaque, for data) -->
+        <!-- Main Content Area -->
         <main class="main-content">
           
           <!-- Code Editor -->
@@ -111,7 +109,7 @@
               <span class="tab active">Console</span>
               <span class="tab">Test Output</span>
               <div class="spacer"></div>
-              <i class="ph ph-trash action-icon" onclick="clearTerminal()"></i>
+              <i class="ph ph-trash action-icon" onclick="clearTerminal()" title="Clear Console"></i>
             </div>
             
             <div id="terminal-screen" class="terminal-content">

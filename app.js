@@ -7,19 +7,31 @@ const appContainer = document.getElementById('macos-app');
 const termLogStream = document.getElementById('terminal-log-stream');
 const toastContainer = document.getElementById('toast-container');
 
-// Controls
 const btnRun = document.getElementById('btn-run');
 const btnReset = document.getElementById('btn-reset');
 const btnNext = document.getElementById('btn-next-problem');
 
-// Init Login time
 document.getElementById('login-time').innerText = new Date().toLocaleTimeString([], {weekday: 'short', hour: '2-digit', minute:'2-digit'});
+
+/* --- RICH INTELLISENSE DICTIONARY --- */
+const PYTHON_INTELLISENSE = [
+  { text: "print", type: "function", icon: "ph-function", desc: "Print values to stream" },
+  { text: "len", type: "function", icon: "ph-function", desc: "Return length of object" },
+  { text: "range", type: "function", icon: "ph-function", desc: "Sequence of numbers" },
+  { text: "enumerate", type: "function", icon: "ph-function", desc: "Index, value iterator" },
+  { text: "def", type: "keyword", icon: "ph-code", desc: "Define a function" },
+  { text: "return", type: "keyword", icon: "ph-code", desc: "Exit and return value" },
+  { text: "if", type: "keyword", icon: "ph-git-branch", desc: "Conditional statement" },
+  { text: "else", type: "keyword", icon: "ph-git-branch", desc: "Alternative condition" },
+  { text: "for", type: "keyword", icon: "ph-arrows-clockwise", desc: "Loop sequence" },
+  { text: "while", type: "keyword", icon: "ph-arrows-clockwise", desc: "Loop while true" },
+  { text: "import", type: "keyword", icon: "ph-package", desc: "Import a module" }
+];
 
 async function initializeApp() {
   currentProblem = getRandomAIProblem();
   renderProblem(currentProblem);
 
-  // Setup CodeMirror
   editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
     mode: "python",
     theme: "nord",
@@ -28,7 +40,7 @@ async function initializeApp() {
     matchBrackets: true,
     autoCloseBrackets: true,
     extraKeys: {
-      "Ctrl-Space": "autocomplete",
+      "Ctrl-Space": triggerRichIntelliSense,
       "Cmd-Enter": handleExecute, 
       "Tab": function(cm) {
         if (cm.somethingSelected()) cm.indentSelection("add");
@@ -37,12 +49,10 @@ async function initializeApp() {
     }
   });
 
+  // Trigger Rich Custom Suggestions on type
   editor.on("inputRead", function(cm, change) {
-    if (change.origin === "+input") {
-      const text = change.text[0];
-      if (/^[a-zA-Z_.]*$/.test(text)) {
-        cm.showHint({ completeSingle: false });
-      }
+    if (change.origin === "+input" && /^[a-zA-Z_]*$/.test(change.text[0])) {
+      triggerRichIntelliSense(cm);
     }
   });
 
@@ -55,10 +65,10 @@ async function initializeApp() {
         loadingScreen.classList.add('hidden');
         appContainer.classList.remove('hidden');
         editor.refresh();
-        showToast("System Ready", "ph-check-circle");
-    }, 250);
+        showToast("Engine Warmed Up", "ph-check-circle");
+    }, 300);
   } catch (err) {
-    showToast("Engine Error: " + err.message, "ph-warning");
+    showToast("Engine Error: " + err.message, "ph-warning-circle");
   }
 
   btnRun.addEventListener('click', handleExecute);
@@ -73,21 +83,51 @@ async function initializeApp() {
     renderProblem(currentProblem);
     editor.setValue(currentProblem.boilerplate);
     clearTerminal();
-    showToast("Problem Loaded", "ph-folder");
+    showToast("Loaded Next Problem", "ph-folder-open");
   });
 }
 
-// MAC OS Optimistic UI Toast Notification
+/* --- CUSTOM RICH HINT RENDERING --- */
+function triggerRichIntelliSense(cm) {
+  const cursor = cm.getCursor();
+  const token = cm.getTokenAt(cursor);
+  const start = token.string.trim().toLowerCase();
+  
+  // Filter dictionary based on typing
+  const matches = PYTHON_INTELLISENSE.filter(item => item.text.startsWith(start));
+  if (matches.length === 0) return;
+
+  const hintObj = {
+    list: matches.map(item => ({
+      text: item.text,
+      // Custom Render function injected into CodeMirror Hint DOM
+      render: function(element, self, data) {
+        element.innerHTML = `
+          <div class="hint-left">
+            <i class="ph-fill ${item.icon} hint-icon"></i>
+            <span>${item.text}</span>
+          </div>
+          <div class="hint-desc">${item.desc}</div>
+        `;
+      }
+    })),
+    from: CodeMirror.Pos(cursor.line, token.start),
+    to: CodeMirror.Pos(cursor.line, token.end)
+  };
+
+  cm.showHint({ hint: () => hintObj, completeSingle: false });
+}
+
 function showToast(message, icon) {
   const toast = document.createElement('div');
   toast.className = 'mac-toast';
-  toast.innerHTML = `<i class="ph ${icon}"></i> <span>${message}</span>`;
+  toast.innerHTML = `<i class="ph-fill ${icon}"></i> <span>${message}</span>`;
   toastContainer.appendChild(toast);
 
   setTimeout(() => {
     toast.classList.add('exit');
-    setTimeout(() => toast.remove(), 300);
-  }, 2500);
+    setTimeout(() => toast.remove(), 400);
+  }, 3000);
 }
 
 function renderProblem(problem) {
@@ -116,9 +156,8 @@ window.clearTerminal = function() {
 async function handleExecute() {
   const code = editor.getValue();
   
-  // UX Feedback
   btnRun.disabled = true;
-  btnRun.innerHTML = `<i class="ph ph-spinner"></i> Running...`;
+  btnRun.innerHTML = `<i class="ph-fill ph-spinner-gap" style="animation: spin 1s linear infinite;"></i> Running...`;
 
   termLogStream.innerHTML += `
     <div class="term-line prompt-wrap">
@@ -150,7 +189,6 @@ function renderTerminalResults(result) {
 
       const statusIcon = tc.passed ? `<span class="log-pass">✔ PASS</span>` : `<span class="log-fail">✘ FAIL</span>`;
       const timeInfo = `<span class="text-tertiary">(${tc.time_ms.toFixed(2)}ms)</span>`;
-
       output += `<div class="term-line">${statusIcon} Case ${tc.id} ${timeInfo}</div>`;
 
       if (!tc.passed) {
@@ -168,7 +206,7 @@ function renderTerminalResults(result) {
         showToast("All Tests Passed", "ph-check-circle");
     } else {
         output += `<div class="term-line log-fail">⚠ ${result.results.length - passedCount} Tests Failed</div>`;
-        showToast("Tests Failed", "ph-warning");
+        showToast("Tests Failed", "ph-warning-circle");
     }
   }
 
@@ -179,7 +217,6 @@ function renderTerminalResults(result) {
     `;
   }
 
-  // Restore Prompt
   output += `
     <div class="term-line prompt-wrap" style="margin-top: 8px;">
       ${getZshPrompt()} <span class="text-tertiary">_</span>
