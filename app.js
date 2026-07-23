@@ -2,6 +2,15 @@ const engine = new PythonEngine();
 let editor = null;
 let currentProblem = null;
 let autoSaveTimer = null;
+let selectedGoogleModel = "models/gemini-1.5-pro";
+
+// Standard Google Gemini Models Fallback List
+const DEFAULT_GOOGLE_MODELS = [
+  { id: "models/gemini-1.5-pro", name: "Gemini 1.5 Pro", desc: "Complex reasoning, coding & large context window" },
+  { id: "models/gemini-1.5-flash", name: "Gemini 1.5 Flash", desc: "Fast & lightweight for quick code generation" },
+  { id: "models/gemini-2.0-flash", name: "Gemini 2.0 Flash", desc: "Next-gen multimodal speed & precision" },
+  { id: "models/gemini-1.0-pro", name: "Gemini 1.0 Pro", desc: "Standard text & code reasoning model" }
+];
 
 // DOM Elements
 const loadingScreen = document.getElementById('loading-screen');
@@ -22,16 +31,15 @@ const btnFilesToggle = document.getElementById('btn-files-toggle');
 // Modal Elements
 const settingsModal = document.getElementById('settings-modal');
 const btnCloseSettings = document.getElementById('btn-close-settings');
+const btnCloseSettingsDot = document.getElementById('btn-close-settings-dot');
 const btnSaveSettings = document.getElementById('btn-save-settings');
 
-const tabBtnCreds = document.getElementById('tab-btn-creds');
-const tabBtnCustom = document.getElementById('tab-btn-custom');
-const secCreds = document.getElementById('sec-creds');
-const secCustom = document.getElementById('sec-custom');
-
-// Form Inputs
-const inputModel = document.getElementById('setting-model');
+// Credentials Form Inputs
 const inputApiKey = document.getElementById('setting-api-key');
+const keyErrorMsg = document.getElementById('key-error-msg');
+const modelPickerList = document.getElementById('model-picker-list');
+
+// Customization Form Inputs
 const inputComplexity = document.getElementById('setting-complexity');
 const inputField = document.getElementById('setting-field');
 const inputTopics = document.getElementById('setting-topics');
@@ -42,7 +50,6 @@ const tabPytest = document.getElementById('tab-pytest');
 document.getElementById('login-time').innerText = new Date().toLocaleTimeString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' });
 
 async function initializeApp() {
-  // 1. Check DB for previous session state
   const savedState = AppDB.getActiveState();
   if (savedState && savedState.problem) {
     currentProblem = savedState.problem;
@@ -52,7 +59,7 @@ async function initializeApp() {
 
   renderProblem(currentProblem);
 
-  // 2. Initialize CodeMirror Editor
+  // Initialize CodeMirror Editor
   editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
     mode: "python",
     theme: "nord",
@@ -69,14 +76,13 @@ async function initializeApp() {
     }
   });
 
-  // Load code from DB if exists
   if (savedState && savedState.code) {
     editor.setValue(savedState.code);
   } else {
     editor.setValue(currentProblem.boilerplate);
   }
 
-  // 3. Auto-save code on typing (Debounced)
+  // Auto-save code on typing
   editor.on("change", () => {
     clearTimeout(autoSaveTimer);
     autoSaveTimer = setTimeout(() => {
@@ -84,7 +90,7 @@ async function initializeApp() {
     }, 1000);
   });
 
-  // Global Keyboard Shortcut: Cmd/Ctrl + Enter
+  // Global Shortcut: Cmd/Ctrl + Enter
   document.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
@@ -92,7 +98,6 @@ async function initializeApp() {
     }
   });
 
-  // Trigger IntelliSense automatically on typing
   editor.on("inputRead", function(cm, change) {
     if (change.origin === "+input" && /^[a-zA-Z_.]*$/.test(change.text[0])) {
       cm.showHint({ hint: PythonIntelliSense.getHints, completeSingle: false });
@@ -113,7 +118,7 @@ async function initializeApp() {
     showToast("Engine Error: " + err.message, "ph-warning-circle");
   }
 
-  // Bind Buttons
+  // Bind Controls
   btnRun.addEventListener('click', triggerRunFromTerminal);
   
   btnReset.addEventListener('click', () => {
@@ -140,17 +145,22 @@ async function initializeApp() {
   tabZsh.addEventListener('click', () => switchTerminalTab('zsh'));
   tabPytest.addEventListener('click', () => switchTerminalTab('pytest'));
 
-  // Modal Controls
+  // Settings Controls
   btnSettingsToggle.addEventListener('click', openSettingsModal);
   btnCloseSettings.addEventListener('click', closeSettingsModal);
+  if (btnCloseSettingsDot) btnCloseSettingsDot.addEventListener('click', closeSettingsModal);
   btnSaveSettings.addEventListener('click', handleSaveSettings);
 
   btnAiToggle.addEventListener('click', () => showToast("AI Assistant Active", "ph-sparkle"));
   btnFilesToggle.addEventListener('click', () => showToast("Task History Loaded", "ph-folder-open"));
 
-  // Settings Tabs
-  tabBtnCreds.addEventListener('click', () => switchModalTab('creds'));
-  tabBtnCustom.addEventListener('click', () => switchModalTab('custom'));
+  // Settings Sidebar Listeners
+  document.querySelectorAll('.settings-nav-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetTab = btn.getAttribute('data-tab');
+      switchSettingsTab(targetTab, btn);
+    });
+  });
 
   document.querySelector('.terminal-content').addEventListener('click', (e) => {
     if (e.target.tagName !== 'INPUT') {
@@ -169,42 +179,135 @@ function saveCurrentStateToDB() {
   });
 }
 
-/* --- SETTINGS MODAL LOGIC --- */
-function openSettingsModal() {
+/* ==========================================================================
+   GOOGLE GEMINI MODELS & SETTINGS MODAL
+   ========================================================================== */
+async function openSettingsModal() {
   const creds = AppDB.getCredentials();
   const custom = AppDB.getAICustomization();
 
-  inputModel.value = creds.model || 'gpt-4o';
   inputApiKey.value = creds.apiKey || '';
+  selectedGoogleModel = creds.model || 'models/gemini-1.5-pro';
+  
   inputComplexity.value = custom.complexity || 'intermediate';
   inputField.value = custom.field || '';
   inputTopics.value = custom.topics || '';
 
+  keyErrorMsg.classList.add('hidden');
+  
+  // Render default model cards initially
+  renderModelPicker(DEFAULT_GOOGLE_MODELS);
   settingsModal.classList.remove('hidden');
+
+  // Background fetch Google models if API Key exists
+  if (creds.apiKey) {
+    fetchGoogleModelsInBackground(creds.apiKey);
+  }
 }
 
 function closeSettingsModal() {
   settingsModal.classList.add('hidden');
 }
 
-function switchModalTab(tab) {
-  if (tab === 'creds') {
-    tabBtnCreds.classList.add('active');
-    tabBtnCustom.classList.remove('active');
-    secCreds.classList.remove('hidden');
-    secCustom.classList.add('hidden');
-  } else {
-    tabBtnCustom.classList.add('active');
-    tabBtnCreds.classList.remove('active');
-    secCustom.classList.remove('hidden');
-    secCreds.classList.add('hidden');
+function switchSettingsTab(tabName, clickedBtn) {
+  document.querySelectorAll('.settings-nav-item').forEach(b => b.classList.remove('active'));
+  if (clickedBtn) clickedBtn.classList.add('active');
+
+  document.querySelectorAll('.settings-panel').forEach(p => p.classList.add('hidden'));
+  const targetPanel = document.getElementById(`sec-${tabName}`);
+  if (targetPanel) targetPanel.classList.remove('hidden');
+}
+
+/**
+ * Custom Apple Model List Picker Renderer
+ */
+function renderModelPicker(modelsList) {
+  modelPickerList.innerHTML = '';
+
+  modelsList.forEach(m => {
+    const card = document.createElement('div');
+    const modelId = m.id || m.name;
+    card.className = `model-card ${modelId === selectedGoogleModel ? 'active' : ''}`;
+    card.setAttribute('data-model', modelId);
+
+    card.innerHTML = `
+      <div class="model-info">
+        <span class="model-name">${escapeHtml(m.displayName || m.name || modelId)}</span>
+        <span class="model-desc">${escapeHtml(m.desc || m.description || 'Google Generative AI Model')}</span>
+      </div>
+      <i class="ph-fill ph-check-circle model-check"></i>
+    `;
+
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.model-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      selectedGoogleModel = modelId;
+    });
+
+    modelPickerList.appendChild(card);
+  });
+}
+
+/**
+ * Background Fetch for Google Models via Google API
+ */
+async function fetchGoogleModelsInBackground(apiKey) {
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.models && data.models.length > 0) {
+        // Filter generateContent models
+        const geminiModels = data.models
+          .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
+          .map(m => ({
+            id: m.name,
+            displayName: m.displayName,
+            desc: m.description
+          }));
+        
+        if (geminiModels.length > 0) {
+          renderModelPicker(geminiModels);
+        }
+      }
+    }
+  } catch (err) {
+    // Fallback quietly to defaults
   }
 }
 
-function handleSaveSettings() {
+/**
+ * Save Settings with Real API Key Validation
+ */
+async function handleSaveSettings() {
+  const apiKey = inputApiKey.value.trim();
+
+  // If user provided an API key, validate it against Google's API endpoint
+  if (apiKey) {
+    btnSaveSettings.disabled = true;
+    btnSaveSettings.innerHTML = `<i class="ph-fill ph-spinner-gap" style="animation: spin 1s linear infinite;"></i> Validating...`;
+
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+      if (!res.ok) {
+        throw new Error("API Key Verification Failed");
+      }
+    } catch (err) {
+      btnSaveSettings.disabled = false;
+      btnSaveSettings.innerHTML = `Save Changes`;
+      keyErrorMsg.classList.remove('hidden');
+      showToast("Invalid Google API Key", "ph-warning-circle");
+      return;
+    }
+  }
+
+  btnSaveSettings.disabled = false;
+  btnSaveSettings.innerHTML = `Save Changes`;
+  keyErrorMsg.classList.add('hidden');
+
   AppDB.saveCredentials({
-    model: inputModel.value,
-    apiKey: inputApiKey.value
+    model: selectedGoogleModel,
+    apiKey: apiKey
   });
 
   AppDB.saveAICustomization({
@@ -214,7 +317,7 @@ function handleSaveSettings() {
   });
 
   closeSettingsModal();
-  showToast("Settings Saved", "ph-check-circle");
+  showToast("Google Credentials Saved", "ph-check-circle");
 }
 
 function switchTerminalTab(tabName) {

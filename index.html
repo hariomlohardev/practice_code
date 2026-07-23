@@ -38,60 +38,157 @@
   <!-- Toast Container -->
   <div id="toast-container"></div>
 
-  <!-- macOS Settings Sheet Modal -->
+  <!-- macOS System Settings Window -->
   <div id="settings-modal" class="mac-modal-backdrop hidden">
-    <div class="mac-modal-sheet">
+    <div class="mac-settings-window">
+      
+      <!-- Settings Header Bar -->
       <div class="mac-modal-header">
-        <span class="mac-modal-title">Settings</span>
+        <div class="mac-traffic-lights">
+          <div class="dot red" id="btn-close-settings-dot" title="Close"></div>
+        </div>
+        <span class="mac-modal-title">System Settings</span>
         <button id="btn-close-settings" class="icon-btn"><i class="ph ph-x"></i></button>
       </div>
-      
-      <!-- Segmented Control Tabs -->
-      <div class="mac-segmented-control">
-        <button class="seg-btn active" id="tab-btn-creds">Credentials</button>
-        <button class="seg-btn" id="tab-btn-custom">Customize AI</button>
+
+      <!-- Settings Body (Sidebar + Content) -->
+      <div class="mac-settings-body">
+        
+        <!-- Sidebar Navigation -->
+        <div class="settings-sidebar">
+          <button class="settings-nav-item active" data-tab="creds">
+            <i class="ph-fill ph-key"></i>
+            <span>Credentials</span>
+          </button>
+          <button class="settings-nav-item" data-tab="custom">
+            <i class="ph-fill ph-sliders-horizontal"></i>
+            <span>Customize AI</span>
+          </button>
+          
+          <div class="settings-nav-divider"></div>
+          
+          <button class="settings-nav-item" data-tab="about">
+            <i class="ph-fill ph-info"></i>
+            <span>About Studio</span>
+          </button>
+          <button class="settings-nav-item" data-tab="creator">
+            <i class="ph-fill ph-code"></i>
+            <span>Creator & GitHub</span>
+          </button>
+        </div>
+
+        <!-- Detail Content Area -->
+        <div class="settings-content">
+          
+          <!-- Panel 1: Credentials (Google Exclusive) -->
+          <div id="sec-creds" class="settings-panel">
+            <h2 class="panel-title">AI Credentials</h2>
+
+            <!-- Google Support Star Banner -->
+            <div class="google-notice-card">
+              <i class="ph-fill ph-star notice-star"></i>
+              <div class="notice-text">
+                <strong>Google Gemini Only</strong>
+                <span>Python Studio currently supports Google models exclusively.</span>
+              </div>
+            </div>
+
+            <!-- API Key Field -->
+            <div class="form-group">
+              <label class="form-label">Google Gemini API Key</label>
+              <input type="password" id="setting-api-key" class="mac-input" placeholder="AIzaSy..." autocomplete="off" />
+              <span id="key-error-msg" class="form-error hidden">Invalid Google API Key. Please check and try again.</span>
+            </div>
+
+            <!-- Custom Apple Model Selector List -->
+            <div class="form-group">
+              <div class="picker-header">
+                <label class="form-label">Select Google Model</label>
+
+              </div>
+              
+              <div id="model-picker-list" class="mac-model-picker">
+                <!-- Dynamically Populated Cards -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Panel 2: Customize AI -->
+          <div id="sec-custom" class="settings-panel hidden">
+            <h2 class="panel-title">AI Customization</h2>
+            <div class="form-group">
+              <label class="form-label">Coding Complexity</label>
+              <select id="setting-complexity" class="mac-select">
+                <option value="beginner">Beginner (Detailed comments & basics)</option>
+                <option value="intermediate" selected>Intermediate (Standard / Clean)</option>
+                <option value="advanced">Advanced (Production-grade, optimized)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Domain / Field</label>
+              <input type="text" id="setting-field" class="mac-input" placeholder="e.g. Data Science, Web Backend, Systems" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Interests & Preferred Libraries</label>
+              <input type="text" id="setting-topics" class="mac-input" placeholder="e.g. NumPy, Asyncio, PyTorch, FastAPI" />
+            </div>
+          </div>
+
+          <!-- Panel 3: About Studio -->
+          <div id="sec-about" class="settings-panel hidden">
+            <div class="about-hero">
+              <i class="ph-fill ph-apple-logo about-icon"></i>
+              <h2 class="about-title">macOS Python Studio</h2>
+              <span class="text-tertiary">Version 2.4.0 (Build 2026)</span>
+            </div>
+            <div class="mac-group-list">
+              <div class="mac-list-row">
+                <span>Python Engine</span>
+                <span class="text-tertiary">Pyodide v0.26.4 (WASM)</span>
+              </div>
+              <div class="mac-list-row">
+                <span>AI Provider</span>
+                <span class="text-tertiary">Google Gemini API</span>
+              </div>
+              <div class="mac-list-row">
+                <span>Architecture</span>
+                <span class="text-tertiary">Apple Silicon / Universal</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 4: Creator & GitHub Links -->
+          <div id="sec-creator" class="settings-panel hidden">
+            <h2 class="panel-title">Creator & Open Source</h2>
+            <p class="body-text">Crafted with Apple Design Guidelines for high-efficiency browser Python development.</p>
+            
+            <div class="mac-group-list" style="margin-top: 16px;">
+              <a href="https://github.com" target="_blank" rel="noopener" class="mac-list-row link-row">
+                <div class="row-left">
+                  <i class="ph-bold ph-github-logo"></i>
+                  <span>GitHub Repository</span>
+                </div>
+                <i class="ph ph-arrow-square-out text-tertiary"></i>
+              </a>
+              <a href="https://github.com" target="_blank" rel="noopener" class="mac-list-row link-row">
+                <div class="row-left">
+                  <i class="ph-bold ph-globe"></i>
+                  <span>GitHub Pages / Documentation</span>
+                </div>
+                <i class="ph ph-arrow-square-out text-tertiary"></i>
+              </a>
+            </div>
+          </div>
+
+        </div>
       </div>
 
-      <!-- Tab 1: Credentials -->
-      <div id="sec-creds" class="modal-section">
-        <div class="form-group">
-          <label class="form-label">AI Model Provider</label>
-          <select id="setting-model" class="mac-select">
-            <option value="gpt-4o">OpenAI GPT-4o</option>
-            <option value="claude-3-5-sonnet">Anthropic Claude 3.5 Sonnet</option>
-            <option value="gemini-1-5-pro">Google Gemini 1.5 Pro</option>
-            <option value="custom">Custom Endpoint / Local LLM</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">API Key</label>
-          <input type="password" id="setting-api-key" class="mac-input" placeholder="sk-..." autocomplete="off" />
-        </div>
-      </div>
-
-      <!-- Tab 2: Customize AI -->
-      <div id="sec-custom" class="modal-section hidden">
-        <div class="form-group">
-          <label class="form-label">Coding Complexity</label>
-          <select id="setting-complexity" class="mac-select">
-            <option value="beginner">Beginner (Detailed comments & basics)</option>
-            <option value="intermediate" selected>Intermediate (Standard / Clean)</option>
-            <option value="advanced">Advanced (Production-grade, optimized)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Domain / Field</label>
-          <input type="text" id="setting-field" class="mac-input" placeholder="e.g. Data Science, Web Backend, Machine Learning" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Interests & Preferred Libraries</label>
-          <input type="text" id="setting-topics" class="mac-input" placeholder="e.g. NumPy, Asyncio, Pandas, FastAPI" />
-        </div>
-      </div>
-
+      <!-- Modal Footer -->
       <div class="mac-modal-footer">
-        <button id="btn-save-settings" class="btn btn-primary">Save Settings</button>
+        <button id="btn-save-settings" class="btn btn-primary">Save Changes</button>
       </div>
+
     </div>
   </div>
 
