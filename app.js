@@ -5,27 +5,28 @@ let currentProblem = null;
 const loadingScreen = document.getElementById('loading-screen');
 const appContainer = document.getElementById('mac-window');
 const termLogStream = document.getElementById('terminal-log-stream');
+
+// Bind to the new Mac Run Pill Button
 const btnRun = document.getElementById('btn-run');
 const btnReset = document.getElementById('btn-reset');
 const btnNext = document.getElementById('btn-next-problem');
 
-// Format current time for Mac Terminal Login string
 document.getElementById('login-time').innerText = new Date().toLocaleTimeString([], {weekday: 'short', hour: '2-digit', minute:'2-digit'});
 
 async function initializeApp() {
   currentProblem = getRandomAIProblem();
   renderProblem(currentProblem);
 
-  // Initialize VS Code / CodeMirror Editor
   editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
     mode: "python",
     theme: "dracula",
     lineNumbers: true,
     indentUnit: 4,
     matchBrackets: true,
-    autoCloseBrackets: true, // Enables VS Code like () {} "" auto-close
+    autoCloseBrackets: true, 
     extraKeys: {
-      "Ctrl-Space": "autocomplete", // IntelliSense trigger
+      "Ctrl-Space": "autocomplete", 
+      "Cmd-Enter": handleExecute, 
       "Tab": function(cm) {
         if (cm.somethingSelected()) cm.indentSelection("add");
         else cm.replaceSelection("    ", "end");
@@ -33,7 +34,6 @@ async function initializeApp() {
     }
   });
 
-  // Auto-trigger IntelliSense popups as user types
   editor.on("inputRead", function(cm, change) {
     if (change.origin === "+input") {
       const text = change.text[0];
@@ -47,9 +47,12 @@ async function initializeApp() {
 
   try {
     await engine.init();
-    loadingScreen.style.display = 'none';
-    appContainer.classList.remove('hidden');
-    editor.refresh();
+    loadingScreen.style.opacity = '0';
+    setTimeout(() => {
+        loadingScreen.style.display = 'none';
+        appContainer.classList.remove('hidden');
+        editor.refresh();
+    }, 500);
   } catch (err) {
     alert("Error loading Python Kernel: " + err.message);
   }
@@ -76,7 +79,7 @@ function renderProblem(problem) {
 }
 
 function getZshPrompt() {
-  return `<span class="prompt-user">dev@macbook-pro</span> <span class="prompt-dir">python-practice</span> % `;
+  return `<span class="prompt-user">dev@MacBook-Pro</span> <span class="prompt-dir">python-practice</span> % `;
 }
 
 function clearTerminal() {
@@ -89,30 +92,35 @@ function clearTerminal() {
 
 async function handleExecute() {
   const code = editor.getValue();
+  
+  // UI State: Make the button look busy
   btnRun.disabled = true;
+  btnRun.innerHTML = `<i class="ph-fill ph-spinner ph-spin"></i><span>Running</span>`;
+  btnRun.style.opacity = "0.7";
 
-  // Render Mac zsh execution line
   termLogStream.innerHTML = `
     <div class="terminal-line prompt-line">
       ${getZshPrompt()} <span class="log-run">python3 solution.py</span>
     </div>
-    <div class="terminal-line text-muted">Running test harness...</div>
   `;
 
   const result = await engine.run(code, currentProblem);
+  
+  // UI State: Restore button
   btnRun.disabled = false;
+  btnRun.innerHTML = `<i class="ph-fill ph-play"></i><span>Run</span>`;
+  btnRun.style.opacity = "1";
+  
   renderTerminalResults(result);
 }
 
 function renderTerminalResults(result) {
   let streamHtml = termLogStream.innerHTML;
 
-  // Python Exception / Traceback
   if (result.stderr) {
     streamHtml += `<div class="terminal-line log-fail">${escapeHtml(result.stderr)}</div>`;
   }
 
-  // Test Results Output
   if (result.results && result.results.length > 0) {
     let passedCount = 0;
 
@@ -148,7 +156,6 @@ function renderTerminalResults(result) {
     `;
   }
 
-  // Raw Stdout
   if (result.stdout) {
     streamHtml += `
       <div class="terminal-line text-muted">[stdout]</div>
@@ -156,7 +163,6 @@ function renderTerminalResults(result) {
     `;
   }
 
-  // Return to prompt
   streamHtml += `
     <div class="terminal-line">&nbsp;</div>
     <div class="terminal-line prompt-line">
@@ -166,7 +172,6 @@ function renderTerminalResults(result) {
 
   termLogStream.innerHTML = streamHtml;
 
-  // Auto scroll terminal
   const termBody = document.getElementById('terminal-screen');
   termBody.scrollTop = termBody.scrollHeight;
 }

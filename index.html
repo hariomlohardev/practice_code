@@ -17,7 +17,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
   
-  <!-- CodeMirror Addons: Auto-Close Brackets, Match Brackets, Auto-Complete Hints -->
+  <!-- CodeMirror Addons -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
@@ -30,76 +30,67 @@
 </head>
 <body>
 
-  <!-- Startup Loader (Mac Style) -->
+  <!-- Startup Loader -->
   <div id="loading-screen">
     <div class="mac-loader">
-      <i class="ph ph-command"></i>
+      <i class="ph-fill ph-apple-logo"></i>
       <div class="mac-progress-track">
         <div class="mac-progress-fill"></div>
       </div>
-      <span class="startup-text">Starting Python Kernel...</span>
+      <span class="startup-text">Starting Python Environment...</span>
     </div>
   </div>
 
-  <!-- Mac Window Wrapper -->
-  <div id="mac-window" class="hidden">
-    
-    <!-- Mac Title Bar -->
-    <div class="mac-title-bar">
-      <div class="mac-traffic-lights">
-        <div class="mac-btn mac-close"></div>
-        <div class="mac-btn mac-min"></div>
-        <div class="mac-btn mac-max"></div>
-      </div>
-      <div class="mac-window-title">
-        <i class="ph ph-folder"></i> python-practice — solution.py
-      </div>
-      <div class="mac-spacer"></div>
-    </div>
-
-    <!-- Workspace Container -->
-    <div class="workspace">
+  <!-- Mac Desktop Background Wrapper -->
+  <div class="mac-desktop">
+    <!-- Modern Rounded Mac Window -->
+    <div id="mac-window" class="hidden">
       
       <!-- Left Pane: Problem Description -->
       <div class="pane left-pane">
-        <div class="pane-toolbar blur-header">
+        <!-- Integrated Traffic Lights -->
+        <div class="pane-header mac-vibrancy">
+          <div class="mac-traffic-lights">
+            <div class="mac-btn close"></div>
+            <div class="mac-btn minimize"></div>
+            <div class="mac-btn maximize"></div>
+          </div>
           <span class="doc-tag">MARKDOWN</span>
-          <button id="btn-next-problem" class="mac-icon-btn" title="Next Problem">
-            <i class="ph ph-arrow-right"></i>
-          </button>
         </div>
         
         <div class="markdown-body">
+          <button id="btn-next-problem" class="btn-refresh"><i class="ph ph-arrows-clockwise"></i> Load New</button>
           <h1 id="problem-title" class="title-heading">...</h1>
           <div id="problem-desc" class="desc-content">...</div>
-          
           <div class="border-divider"></div>
-          
           <div id="problem-examples" class="examples-block"></div>
-          
           <div class="target-spec">
-            <i class="ph ph-timer"></i>
-            <span>Target: &le; <span id="target-time">0</span>ms / test</span>
+            <i class="ph ph-timer"></i> Target: &le; <span id="target-time">0</span>ms
           </div>
         </div>
       </div>
 
-      <!-- Right Pane: VS Code Editor + Mac Terminal -->
+      <!-- Right Pane: Mac Editor + Mac zsh Terminal -->
       <div class="pane right-pane">
         
-        <!-- Editor Top Navigation -->
-        <div class="pane-toolbar blur-header editor-header">
-          <div class="tabs-group">
+        <!-- VS Code Mac Style Editor Header -->
+        <div class="mac-editor-toolbar mac-vibrancy">
+          <div class="mac-tabs">
             <div class="mac-tab active">
-              <i class="ph ph-file-code" style="color: #519aba;"></i> solution.py
+              <i class="ph-fill ph-file-code" style="color: #4daafc;"></i>
+              <span>solution.py</span>
             </div>
           </div>
-          <div class="editor-actions">
+
+          <!-- Mac Editor Actions (RUN BUTTON HERE) -->
+          <div class="mac-actions">
             <button id="btn-reset" class="mac-icon-btn" title="Reset Code">
               <i class="ph ph-arrow-counter-clockwise"></i>
             </button>
-            <button id="btn-run" class="mac-action-btn" title="Run & Test Code">
-              <i class="ph ph-play-fill"></i> Run Code
+            <div class="action-divider"></div>
+            <button id="btn-run" class="mac-play-pill" title="Run Code (Cmd+Enter)">
+              <i class="ph-fill ph-play"></i>
+              <span>Run</span>
             </button>
           </div>
         </div>
@@ -111,10 +102,16 @@
 
         <!-- Mac zsh Terminal Area -->
         <div class="mac-terminal">
-          <div class="terminal-header">
-            <span>Terminal</span>
+          <!-- Terminal Panel Header -->
+          <div class="terminal-panel-header mac-vibrancy">
+            <div class="term-tabs">
+              <div class="term-tab">PROBLEMS</div>
+              <div class="term-tab">OUTPUT</div>
+              <div class="term-tab active">TERMINAL</div>
+            </div>
             <div class="term-actions">
               <i class="ph ph-plus"></i>
+              <i class="ph ph-split-horizontal"></i>
               <i class="ph ph-trash"></i>
               <i class="ph ph-x"></i>
             </div>
@@ -125,7 +122,7 @@
             <div class="terminal-line text-muted">Last login: <span id="login-time"></span> on ttys001</div>
             <div id="terminal-log-stream">
               <div class="terminal-line prompt-line">
-                <span class="prompt-user">dev@macbook-pro</span> <span class="prompt-dir">python-practice</span> % <span class="text-muted">_</span>
+                <span class="prompt-user">dev@MacBook-Pro</span> <span class="prompt-dir">python-practice</span> % <span class="text-muted">_</span>
               </div>
             </div>
           </div>

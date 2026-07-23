@@ -14,22 +14,6 @@ const MOCK_PROBLEMS = [
       { inputs: [[3, 2, 4], 6], expected: [1, 2] },
       { inputs: [[3, 3], 6], expected: [0, 1] }
     ]
-  },
-  {
-    title: "Alphanumeric Palindrome",
-    description: "Determine whether a given string is a palindrome after converting all uppercase characters to lowercase and removing all non-alphanumeric characters.",
-    functionName: "is_palindrome",
-    targetTimeMs: 10.0,
-    boilerplate: "import re\n\ndef is_palindrome(s):\n    # Start coding... \n    pass\n",
-    examples: [
-      "Input: s = \"A man, a plan, a canal: Panama\"\nOutput: True",
-      "Input: s = \"race a car\"\nOutput: False"
-    ],
-    testCases: [
-      { inputs: ["A man, a plan, a canal: Panama"], expected: true },
-      { inputs: ["race a car"], expected: false },
-      { inputs: [" "], expected: true }
-    ]
   }
 ];
 

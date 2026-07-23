@@ -1,49 +1,45 @@
 /* ==========================================================================
-   MACOS DESIGN TOKENS
+   MODERN MACOS & VS CODE DESIGN TOKENS
    ========================================================================== */
 :root {
-  /* Mac Dark Mode Colors */
-  --mac-bg: #1e1e1e;          /* VS Code Editor BG */
-  --mac-panel: #252526;       /* VS Code Sidebar/Panel */
-  --mac-titlebar: #323233;    /* Mac Titlebar */
-  --mac-border: #454545;      /* Subtle Mac borders */
+  /* VS Code Mac Dark Theme */
+  --mac-bg-solid: #1e1e1e;
+  --mac-sidebar-bg: #18181b; 
+  --mac-border: rgba(255, 255, 255, 0.08);
+  --mac-border-solid: #2b2b2b;
   
-  /* macOS Traffic Lights */
-  --mac-red: #ff5f56;
-  --mac-red-border: #e0443e;
-  --mac-yellow: #ffbd2e;
-  --mac-yellow-border: #dea123;
-  --mac-green: #27c93f;
-  --mac-green-border: #1aab29;
+  /* Vibrancy (Apple Translucency) */
+  --mac-vibrancy-bg: rgba(30, 30, 30, 0.65);
 
-  /* Text & Accent */
-  --text-primary: #cccccc;
+  /* Typography Colors */
+  --text-main: #cccccc;
   --text-white: #ffffff;
-  --text-muted: #858585;
-  --mac-blue: #007aff;
-  --vscode-blue: #0e639c;
+  --text-muted: #85858b;
+  --text-accent: #4daafc;
 
-  /* Terminal Colors */
+  /* Authentic Mac Traffic Lights */
+  --mac-red: #ED6A5E;
+  --mac-yellow: #F4BF4F;
+  --mac-green: #61C554;
+
+  /* Mac Terminal Colors */
   --term-green: #4ade80;
   --term-red: #f87171;
   --term-yellow: #facc15;
   --term-cyan: #22d3ee;
 
-  /* Typography */
-  --font-mac: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  /* Fonts */
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
   --font-mono: "SF Mono", "Menlo", "Monaco", "Consolas", monospace;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: var(--font-mac);
-  background-color: #000000; /* Outer background */
-  color: var(--text-primary);
+  font-family: var(--font-ui);
+  background-color: #000000;
+  color: var(--text-main);
   height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }
@@ -52,173 +48,202 @@ body {
 .text-muted { color: var(--text-muted); }
 
 /* ==========================================================================
-   MAC STARTUP LOADER
+   MAC DESKTOP & FLOATING WINDOW
    ========================================================================== */
-#loading-screen {
-  position: fixed; inset: 0; z-index: 100;
-  background-color: var(--mac-bg);
-  display: flex; align-items: center; justify-content: center;
-}
-.mac-loader {
-  display: flex; flex-direction: column; align-items: center; gap: 16px;
-}
-.mac-loader i { font-size: 48px; color: var(--text-muted); }
-.mac-progress-track {
-  width: 200px; height: 4px; background: var(--mac-border); border-radius: 4px; overflow: hidden;
-}
-.mac-progress-fill {
-  height: 100%; background: var(--text-white); width: 30%;
-  animation: macLoad 2s infinite ease-in-out;
-}
-.startup-text { font-size: 12px; color: var(--text-muted); font-weight: 500; }
-@keyframes macLoad { 0% { transform: translateX(-100%); } 100% { transform: translateX(400%); } }
-
-/* ==========================================================================
-   MAC WINDOW WRAPPER
-   ========================================================================== */
-#mac-window {
+.mac-desktop {
   width: 100vw; height: 100vh;
-  display: flex; flex-direction: column;
-  background-color: var(--mac-bg);
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at top left, #1a1a2e 0%, #000000 100%);
+  padding: 40px;
 }
 
-.mac-title-bar {
-  height: 38px; background-color: var(--mac-titlebar);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 16px; border-bottom: 1px solid #111;
-  -webkit-app-region: drag; /* Simulates draggable area */
+#mac-window {
+  width: 100%; height: 100%; max-width: 1600px;
+  display: flex;
+  background-color: var(--mac-bg-solid);
+  border-radius: 12px;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+  border: 1px solid rgba(0,0,0,0.8);
+  overflow: hidden;
 }
 
-.mac-traffic-lights { display: flex; gap: 8px; width: 60px; }
-.mac-btn { width: 12px; height: 12px; border-radius: 50%; }
-.mac-close { background-color: var(--mac-red); border: 1px solid var(--mac-red-border); }
-.mac-min { background-color: var(--mac-yellow); border: 1px solid var(--mac-yellow-border); }
-.mac-max { background-color: var(--mac-green); border: 1px solid var(--mac-green-border); }
+.pane { flex: 1; display: flex; flex-direction: column; height: 100%; }
 
-.mac-window-title {
-  font-size: 13px; color: var(--text-muted); font-weight: 500;
-  display: flex; align-items: center; gap: 6px;
-}
-.mac-spacer { width: 60px; } /* Balance flexbox */
-
-/* ==========================================================================
-   WORKSPACE LAYOUT
-   ========================================================================== */
-.workspace {
-  display: flex; flex: 1; height: calc(100vh - 38px); overflow: hidden;
-}
-
-.pane { flex: 1; display: flex; flex-direction: column; }
-.left-pane { max-width: 40%; background-color: var(--mac-bg); border-right: 1px solid var(--mac-border); }
-.right-pane { max-width: 60%; background-color: var(--mac-bg); }
-
-/* Pane Headers (Blurred Glass Effect) */
-.pane-toolbar {
-  height: 40px; display: flex; align-items: center; justify-content: space-between;
-  padding: 0 16px; border-bottom: 1px solid var(--mac-border);
-  background-color: rgba(30, 30, 30, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  z-index: 10;
+/* Apple Vibrancy Class (Blurred transparent background) */
+.mac-vibrancy {
+  background-color: var(--mac-vibrancy-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 /* ==========================================================================
    LEFT PANE: MARKDOWN
    ========================================================================== */
+.left-pane { 
+  max-width: 35%; 
+  background-color: var(--mac-sidebar-bg); 
+  border-right: 1px solid var(--mac-border-solid); 
+}
+
+/* Integrated Traffic Lights */
+.pane-header { 
+  height: 48px; display: flex; align-items: center; padding: 0 16px; gap: 20px;
+  border-bottom: 1px solid var(--mac-border);
+  z-index: 10;
+}
+
+.mac-traffic-lights { display: flex; gap: 8px; }
+.mac-btn {
+  width: 12px; height: 12px; border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+}
+.mac-btn.close { background-color: var(--mac-red); }
+.mac-btn.minimize { background-color: var(--mac-yellow); }
+.mac-btn.maximize { background-color: var(--mac-green); }
+
 .doc-tag { font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; }
-.markdown-body { padding: 32px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
-.title-heading { font-size: 24px; font-weight: 600; color: var(--text-white); }
-.desc-content { font-size: 14px; line-height: 1.6; color: var(--text-primary); }
-.desc-content code {
-  font-family: var(--font-mono); font-size: 12.5px;
-  background-color: var(--mac-panel); padding: 2px 6px; border-radius: 4px;
-}
-.border-divider { height: 1px; background-color: var(--mac-border); }
-.examples-block { display: flex; flex-direction: column; gap: 12px; }
-.example-box {
-  background-color: var(--mac-panel); border-left: 3px solid var(--mac-border);
-  padding: 12px 16px; font-family: var(--font-mono); font-size: 13px; line-height: 1.5;
-}
-.target-spec {
-  display: flex; align-items: center; gap: 8px; font-size: 13px;
-  color: var(--term-yellow); background-color: rgba(250, 204, 21, 0.1);
-  padding: 10px 14px; border-radius: 6px;
-}
+
+.markdown-body { padding: 24px 32px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; font-size: 14px; line-height: 1.6; }
+.title-heading { font-size: 22px; color: var(--text-white); font-weight: 600; }
+.btn-refresh { background: var(--mac-border-solid); color: var(--text-main); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; align-self: flex-start; font-size: 12px; transition: background 0.2s;}
+.btn-refresh:hover { background: #333; color: var(--text-white); }
+.desc-content code { font-family: var(--font-mono); background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px; }
+.border-divider { height: 1px; background: var(--mac-border-solid); margin: 10px 0; }
+.example-box { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; font-family: var(--font-mono); font-size: 13px; border: 1px solid var(--mac-border-solid); }
+.target-spec { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--term-yellow); background-color: rgba(250, 204, 21, 0.1); padding: 10px 14px; border-radius: 8px; }
 
 /* ==========================================================================
-   RIGHT PANE: VS CODE EDITOR & ACTIONS
+   RIGHT PANE: MAC EDITOR & RUN BUTTON
    ========================================================================== */
-.tabs-group { display: flex; height: 100%; }
-.mac-tab {
-  display: flex; align-items: center; gap: 8px; padding: 0 16px;
-  font-size: 13px; color: var(--text-white); background-color: var(--mac-bg);
-  border-right: 1px solid var(--mac-border); cursor: pointer;
+.right-pane {
+  max-width: 65%;
+  background-color: var(--mac-bg-solid);
 }
-.editor-actions { display: flex; align-items: center; gap: 8px; }
+
+.mac-editor-toolbar {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 16px;
+  border-bottom: 1px solid var(--mac-border);
+  z-index: 10;
+}
+
+.mac-tabs { display: flex; height: 100%; }
+.mac-tab {
+  height: 100%; display: flex; align-items: center; gap: 8px; padding: 0 20px;
+  color: var(--text-white); font-size: 13px; font-family: var(--font-ui);
+  border-top: 2px solid var(--text-accent);
+  background-color: var(--mac-bg-solid);
+}
+
+.mac-actions { display: flex; align-items: center; gap: 12px; }
 
 .mac-icon-btn {
-  background: transparent; border: none; color: var(--text-muted);
-  width: 28px; height: 28px; border-radius: 4px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; font-size: 16px;
+  background: transparent; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
-.mac-icon-btn:hover { background-color: var(--mac-panel); color: var(--text-white); }
+.mac-icon-btn:hover { color: var(--text-white); }
 
-.mac-action-btn {
-  background-color: var(--vscode-blue); color: white; border: none;
-  padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 500;
-  display: flex; align-items: center; gap: 6px; cursor: pointer;
+.action-divider { width: 1px; height: 16px; background-color: var(--mac-border-solid); }
+
+/* The Apple-style Play/Run Pill Button */
+.mac-play-pill {
+  background-color: rgba(74, 222, 128, 0.15); /* Translucent Green */
+  color: var(--term-green);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  padding: 6px 14px;
+  border-radius: 99px; /* Pill shape */
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-ui);
 }
-.mac-action-btn:hover { background-color: #1177bb; }
+.mac-play-pill i { font-size: 14px; }
+.mac-play-pill:hover {
+  background-color: rgba(74, 222, 128, 0.25);
+  transform: translateY(-1px);
+}
+.mac-play-pill:active { transform: translateY(0) scale(0.95); }
 
-/* Editor Overrides */
+/* VS Code Editor */
 .editor-wrapper { flex: 1; position: relative; }
-.CodeMirror { height: 100% !important; font-family: var(--font-mono) !important; font-size: 14px !important; background-color: var(--mac-bg) !important; }
-.CodeMirror-gutters { background-color: var(--mac-bg) !important; border-right: none !important; }
+
+.CodeMirror {
+  height: 100% !important; font-family: var(--font-mono) !important; font-size: 14px !important; line-height: 1.6 !important; background-color: transparent !important;
+}
+.CodeMirror-gutters { background-color: transparent !important; border-right: none !important; }
 .CodeMirror-linenumber { color: #6e7681 !important; padding-right: 16px !important; }
 
-/* --- VS CODE INTELLISENSE SUGGESTION POPUP --- */
+/* IntelliSense Suggestions Popup */
 .CodeMirror-hints {
-  position: absolute; z-index: 200; overflow: hidden;
-  font-family: var(--font-mono) !important; font-size: 13px !important;
-  background-color: #252526 !important;
-  border: 1px solid #454545 !important;
-  border-radius: 6px !important;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5) !important;
-  padding: 4px 0 !important;
+  position: absolute; z-index: 200; font-family: var(--font-mono) !important; font-size: 13px !important;
+  background-color: #252526 !important; border: 1px solid var(--mac-border-solid) !important;
+  border-radius: 8px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05) !important; padding: 4px 0 !important;
 }
-.CodeMirror-hint {
-  padding: 4px 24px 4px 12px !important; color: #cccccc !important;
-  display: flex; align-items: center;
-}
-/* Simulate VS Code Blue Selection */
-li.CodeMirror-hint-active { background-color: #04395e !important; color: #ffffff !important; }
+.CodeMirror-hint { padding: 4px 16px !important; color: #cccccc !important; }
+li.CodeMirror-hint-active { background-color: #0060a0 !important; color: #ffffff !important; }
 
 /* ==========================================================================
    MAC ZSH TERMINAL
    ========================================================================== */
 .mac-terminal {
-  height: 35%; border-top: 1px solid var(--mac-border);
-  display: flex; flex-direction: column; background-color: #1e1e1e;
+  height: 35%;
+  border-top: 1px solid var(--mac-border-solid);
+  display: flex;
+  flex-direction: column;
 }
-.terminal-header {
-  height: 36px; display: flex; align-items: center; justify-content: space-between;
-  padding: 0 16px; font-size: 11px; text-transform: uppercase; color: var(--text-muted);
-  border-bottom: 1px solid var(--mac-border); background-color: var(--mac-panel);
+
+.terminal-panel-header {
+  height: 38px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--mac-border); z-index: 10;
 }
-.term-actions { display: flex; gap: 12px; font-size: 14px; cursor: pointer; }
+.term-tabs { display: flex; gap: 24px; height: 100%; }
+.term-tab {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: var(--text-muted); display: flex; align-items: center; cursor: pointer; position: relative;
+}
+.term-tab.active { color: var(--text-white); }
+.term-tab.active::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background-color: var(--text-accent);
+}
+.term-actions { display: flex; gap: 12px; color: var(--text-muted); cursor: pointer; font-size: 15px; }
 .term-actions i:hover { color: var(--text-white); }
 
+/* Authentic ZSH Prompt */
 .terminal-body {
-  flex: 1; padding: 12px 16px; overflow-y: auto;
-  font-family: var(--font-mono); font-size: 13px; line-height: 1.6;
+  flex: 1; padding: 12px 20px; overflow-y: auto; font-family: var(--font-mono); font-size: 13px; line-height: 1.5; color: var(--text-main);
+  background-color: var(--mac-bg-solid);
 }
-.terminal-line { margin-bottom: 2px; }
+.terminal-line { margin-bottom: 4px; white-space: pre-wrap; word-break: break-all; }
 
-/* zsh prompt styling */
 .prompt-line { display: flex; gap: 8px; flex-wrap: wrap; }
 .prompt-user { color: var(--term-green); font-weight: 600; }
 .prompt-dir { color: var(--term-cyan); font-weight: 600; }
 
 .log-run { color: var(--text-white); }
-.log-pass { color: var(--term-green); font-weight: 600; }
-.log-fail { color: var(--term-red); font-weight: 600; }
+.log-pass { color: var(--term-green); }
+.log-fail { color: var(--term-red); }
+
+/* ==========================================================================
+   MAC STARTUP LOADER
+   ========================================================================== */
+#loading-screen {
+  position: fixed; inset: 0; z-index: 100;
+  background-color: #000;
+  display: flex; align-items: center; justify-content: center;
+}
+.mac-loader { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.mac-loader i { font-size: 56px; color: var(--text-white); }
+.mac-progress-track { width: 150px; height: 4px; background: #333; border-radius: 4px; overflow: hidden; }
+.mac-progress-fill { height: 100%; background: var(--text-white); width: 30%; animation: macLoad 1.5s infinite ease-in-out; }
+.startup-text { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+@keyframes macLoad { 0% { transform: translateX(-100%); } 100% { transform: translateX(400%); } }
+
+/* Scrollbars - Mac Style */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; border: 2px solid var(--mac-bg-solid); }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
