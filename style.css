@@ -170,16 +170,40 @@ body {
 }
 
 /* ==========================================================================
-   MAIN CONTENT AREA & EDITOR
+   MAIN CONTENT AREA & EDITOR (SCROLLABLE)
    ========================================================================== */
-.main-content { flex: 1; display: flex; flex-direction: column; background: var(--bg-primary); }
+.main-content { 
+  flex: 1; 
+  display: flex; 
+  flex-direction: column; 
+  background: var(--bg-primary);
+  min-height: 0;
+  overflow: hidden;
+}
 
-.editor-section { flex: 1; position: relative; }
+.editor-section { 
+  flex: 1; 
+  position: relative; 
+  min-height: 0;
+  overflow: hidden;
+}
 
 .CodeMirror {
-  height: 100% !important; font-family: var(--font-mono) !important;
-  font-size: 14px !important; line-height: 1.6 !important; background: transparent !important; color: var(--text-primary) !important;
+  position: absolute !important;
+  top: 0; bottom: 0; left: 0; right: 0;
+  height: 100% !important; 
+  font-family: var(--font-mono) !important;
+  font-size: 14px !important; 
+  line-height: 1.6 !important; 
+  background: transparent !important; 
+  color: var(--text-primary) !important;
 }
+
+.CodeMirror-scroll {
+  overflow-y: auto !important;
+  overflow-x: auto !important;
+}
+
 .CodeMirror-gutters { background: transparent !important; border-right: none !important; }
 .CodeMirror-linenumber { color: var(--text-tertiary) !important; padding-right: 16px !important; }
 
@@ -217,7 +241,6 @@ li.CodeMirror-hint-active {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 220px;
 }
 
-/* Badges */
 .hint-badge {
   font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 2px 5px;
   border-radius: 4px; letter-spacing: 0.5px;
