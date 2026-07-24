@@ -1,0 +1,214 @@
+/* ==========================================================================
+   SIDEBAR & LEFT PROBLEM PANE
+   ========================================================================== */
+.app-layout { 
+  display: flex; 
+  flex: 1; 
+  overflow: hidden; 
+}
+
+.sidebar {
+  width: 380px; 
+  flex-shrink: 0;
+  background: var(--bg-vibrant);
+  backdrop-filter: saturate(180%) blur(24px);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  border-right: 0.5px solid var(--border);
+  display: flex; 
+  flex-direction: column;
+}
+
+.sidebar-header { 
+  padding: 16px 20px; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+}
+.section-caps { 
+  font-size: 11px; 
+  font-weight: 600; 
+  color: var(--text-tertiary); 
+  letter-spacing: 0.04em; 
+}
+
+.icon-btn {
+  background: transparent; 
+  border: none; 
+  color: var(--text-tertiary);
+  cursor: pointer; 
+  font-size: 18px; 
+  border-radius: 6px; 
+  padding: 4px;
+  transition: all var(--duration-fast) var(--ease-spring);
+}
+.icon-btn:hover { 
+  background: var(--surface-hover); 
+  color: var(--text-primary); 
+}
+.icon-btn:active { 
+  transform: scale(0.9); 
+}
+
+.sidebar-content { 
+  padding: 0 20px 24px; 
+  overflow-y: auto; 
+}
+.title-1 { 
+  font-size: 24px; 
+  font-weight: 600; 
+  color: var(--text-primary); 
+  margin-bottom: 12px; 
+  letter-spacing: -0.02em; 
+  line-height: 1.2;
+}
+.body-text { 
+  font-size: 13.5px; 
+  line-height: 1.6; 
+  color: var(--text-secondary); 
+}
+.body-text code { 
+  font-family: var(--font-mono); 
+  background: rgba(255,255,255,0.1); 
+  padding: 2px 6px; 
+  border-radius: 4px; 
+  color: var(--accent); 
+}
+
+.divider { 
+  height: 0.5px; 
+  background: var(--border); 
+  margin: 20px 0; 
+}
+
+.examples-grid { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10px; 
+  margin-top: 10px; 
+}
+
+.example-card {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 0.5px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 12px 14px !important;
+  font-family: var(--font-mono) !important;
+  font-size: 11.5px !important;
+  line-height: 1.5 !important;
+  color: var(--text-secondary) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  transition: all 150ms var(--ease-spring) !important;
+}
+
+.example-card:hover {
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.info-callout {
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  padding: 12px 14px;
+  background: rgba(255, 214, 10, 0.1); 
+  color: var(--accent);
+  border: 0.5px solid rgba(255, 214, 10, 0.2); 
+  border-radius: 8px; 
+  font-weight: 500; 
+  margin-top: 20px; 
+  font-size: 13px;
+}
+
+/* ==========================================================================
+   NON-INTERACTIVE STATUS INDICATOR & TEST-LOCKED NEXT BUTTON
+   ========================================================================== */
+.sidebar-footer {
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.25);
+  border-top: 0.5px solid var(--border);
+  display: flex; 
+  gap: 8px; 
+  align-items: center; 
+  justify-content: space-between;
+  margin-top: auto; 
+  flex-shrink: 0;
+}
+
+/* Non-Interactive Indicator Badge */
+.status-indicator-pill {
+  flex: 1;
+  height: 32px;
+  border-radius: 6px;
+  font-family: var(--font-system);
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: default;
+  user-select: none;
+  background: rgba(255, 255, 255, 0.06);
+  border: 0.5px solid var(--border);
+  color: var(--text-tertiary);
+  transition: all var(--duration-normal) var(--ease-spring);
+}
+
+.status-indicator-pill.is-completed {
+  background: rgba(50, 215, 75, 0.15) !important;
+  border-color: rgba(50, 215, 75, 0.4) !important;
+  color: var(--term-green) !important;
+  font-weight: 600;
+}
+
+/* Test-Locked Next Task Button */
+.btn-next-task {
+  flex: 1; 
+  justify-content: center; 
+  height: 32px; 
+  font-size: 12px;
+  transition: all var(--duration-normal) var(--ease-spring);
+}
+
+/* Faded Disabled State (Until tests pass) */
+.btn-next-task:disabled {
+  opacity: 0.35 !important;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
+/* Unlocked Apple Green Transformation (On All Passed) */
+.btn-next-task.all-passed-success {
+  background: var(--term-green) !important;
+  color: #000000 !important;
+  box-shadow: 0 4px 16px rgba(50, 215, 75, 0.35);
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: scale(1.02);
+}
+
+/* Onboarding States */
+.welcome-state-card, .all-completed-state {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; padding: 28px 16px; gap: 14px;
+  animation: sheetEnter var(--duration-normal) var(--ease-spring) forwards;
+}
+
+.welcome-hero-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(255, 214, 10, 0.12); border: 0.5px solid rgba(255, 214, 10, 0.3);
+  color: var(--accent); display: flex; align-items: center; justify-content: center;
+  font-size: 28px; margin-bottom: 4px; box-shadow: 0 4px 16px rgba(255, 214, 10, 0.15);
+}
+
+.completed-hero-icon {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: rgba(50, 215, 75, 0.15); border: 0.5px solid rgba(50, 215, 75, 0.35);
+  color: var(--term-green); display: flex; align-items: center; justify-content: center;
+  font-size: 32px; margin-bottom: 8px; box-shadow: 0 4px 20px rgba(50, 215, 75, 0.25);
+}
+
+.welcome-actions-group { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 12px; }

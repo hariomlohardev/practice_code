@@ -9,6 +9,24 @@ const AppDB = (() => {
     TASKS_HISTORY: 'pystudio_tasks_history'
   };
 
+  const EXAMPLE_STARTER_TASK = {
+    id: "two-sum-indices-001",
+    title: "Target Sum Indices",
+    description: "Given an array of integers <code>nums</code> and an integer <code>target</code>, return the indices of the two elements that add up to the target.<br><br>Assume exactly one valid solution exists. Do not use the same element twice.",
+    functionName: "two_sum",
+    targetTimeMs: 15.0,
+    boilerplate: "def two_sum(nums, target):\n    # Write your optimal solution here\n    pass\n",
+    examples: [
+      "Input: nums = [2, 7, 11, 15], target = 9\nOutput: [0, 1]"
+    ],
+    testCases: [
+      { inputs: [[2, 7, 11, 15], 9], expected: [0, 1] },
+      { inputs: [[3, 2, 4], 6], expected: [1, 2] },
+      { inputs: [[3, 3], 6], expected: [0, 1] }
+    ],
+    completed: false
+  };
+
   function getCredentials() {
     const defaultData = { model: "gemini-3.6-flash", apiKey: "" };
     try { return JSON.parse(localStorage.getItem(KEYS.CREDENTIALS)) || defaultData; } 
@@ -40,7 +58,8 @@ const AppDB = (() => {
 
   function getTasksHistory() {
     try { 
-      const tasks = JSON.parse(localStorage.getItem(KEYS.TASKS_HISTORY)) || []; 
+      const raw = localStorage.getItem(KEYS.TASKS_HISTORY);
+      const tasks = JSON.parse(raw) || []; 
       return tasks.map(t => ({ ...t, completed: !!t.completed }));
     } catch (e) { 
       return []; 
@@ -50,7 +69,7 @@ const AppDB = (() => {
   function saveTask(taskObj) {
     const tasks = getTasksHistory();
     const existingIndex = tasks.findIndex(t => t.id === taskObj.id);
-    const newTask = { ...taskObj, completed: taskObj.completed || false };
+    const newTask = { ...taskObj, completed: !!taskObj.completed };
 
     if (existingIndex >= 0) {
       tasks[existingIndex] = newTask;
@@ -77,13 +96,14 @@ const AppDB = (() => {
     localStorage.setItem(KEYS.TASKS_HISTORY, JSON.stringify(tasks));
   }
 
-  /**
-   * Find the next incomplete task in the user's saved library
-   */
   function getNextIncompleteTask(currentTaskId) {
     const tasks = getTasksHistory();
     const remaining = tasks.filter(t => !t.completed && t.id !== currentTaskId);
     return remaining.length > 0 ? remaining[0] : null;
+  }
+
+  function getStarterExampleTask() {
+    return EXAMPLE_STARTER_TASK;
   }
 
   return {
@@ -97,6 +117,7 @@ const AppDB = (() => {
     saveTask,
     toggleTaskStatus,
     deleteTask,
-    getNextIncompleteTask
+    getNextIncompleteTask,
+    getStarterExampleTask
   };
 })();

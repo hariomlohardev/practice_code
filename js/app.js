@@ -15,9 +15,6 @@ const btnReset = document.getElementById('btn-reset');
 const btnNext = document.getElementById('btn-next-problem');
 const btnClearTerm = document.getElementById('btn-clear-term');
 
-const btnMarkCompleted = document.getElementById('btn-mark-completed');
-const textMarkCompleted = document.getElementById('text-mark-completed');
-const iconMarkCompleted = document.getElementById('icon-mark-completed');
 const btnNextChallenge = document.getElementById('btn-next-challenge');
 
 const tabZsh = document.getElementById('tab-zsh');
@@ -27,10 +24,17 @@ document.getElementById('login-time').innerText = new Date().toLocaleTimeString(
 
 async function initializeApp() {
   const savedState = AppDB.getActiveState();
-  currentProblem = (savedState && savedState.problem) ? savedState.problem : getRandomAIProblem();
-  renderProblem(currentProblem);
+  const tasks = AppDB.getTasksHistory();
 
-  // Initialize CodeMirror Editor
+  if (savedState && savedState.problem) {
+    currentProblem = savedState.problem;
+  } else if (tasks.length > 0) {
+    currentProblem = tasks[0];
+  } else {
+    currentProblem = null;
+  }
+
+  // 1. Initialize CodeMirror Editor FIRST
   editor = CodeMirror.fromTextArea(document.getElementById("code-editor"), {
     mode: "python", theme: "nord", lineNumbers: true, indentUnit: 4,
     matchBrackets: true, autoCloseBrackets: true,
@@ -40,20 +44,23 @@ async function initializeApp() {
     }
   });
 
-  editor.setValue((savedState && savedState.code) ? savedState.code : currentProblem.boilerplate);
+  const initialCode = (savedState && savedState.code) ? savedState.code : (currentProblem ? currentProblem.boilerplate : "");
+  editor.setValue(initialCode);
 
   editor.on("change", () => {
     clearTimeout(autoSaveTimer);
     autoSaveTimer = setTimeout(() => {
-      AppDB.saveActiveState({ code: editor.getValue(), problem: currentProblem });
+      if (currentProblem) {
+        AppDB.saveActiveState({ code: editor.getValue(), problem: currentProblem });
+      }
     }, 1000);
   });
 
-  // Global Shortcut: Cmd/Ctrl + Enter
+  // Global Keyboard Shortcut: Cmd/Ctrl + Enter
   document.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
-      if (!btnRun.disabled) triggerRunFromTerminal();
+      if (!btnRun.disabled && currentProblem) triggerRunFromTerminal();
     }
   });
 
@@ -63,17 +70,21 @@ async function initializeApp() {
     }
   });
 
-  // Initialize AI UI & Tasks Library UI
+  // Initialize UI Managers
   AIUI.init(loadTaskIntoWorkspace);
   TasksUI.init(loadTaskIntoWorkspace);
 
+  // 2. Render Problem / Welcome View safely
+  renderProblem(currentProblem);
+
+  // 3. Initialize Pyodide & Reveal macOS Window
   try {
     await engine.init();
     loadingScreen.style.opacity = '0';
     setTimeout(() => {
       loadingScreen.classList.add('hidden');
       appContainer.classList.remove('hidden');
-      editor.refresh();
+      editor.refresh(); // Crucial to prevent blank editor
       showToast("System Ready", "ph-check-circle");
       TerminalManager.appendPrompt(handleTerminalCommand);
     }, 300);
@@ -84,20 +95,12 @@ async function initializeApp() {
   // Bind Buttons
   btnRun.addEventListener('click', triggerRunFromTerminal);
   btnReset.addEventListener('click', () => {
-    editor.setValue(currentProblem.boilerplate);
+    if (currentProblem) editor.setValue(currentProblem.boilerplate);
     showToast("Editor Reset", "ph-arrow-counter-clockwise");
   });
   
   btnNext.addEventListener('click', loadRandomOrNextProblem);
   btnNextChallenge.addEventListener('click', handleNextChallengeClick);
-
-  btnMarkCompleted.addEventListener('click', () => {
-    if (!currentProblem || !currentProblem.id) return;
-    const isCompleted = AppDB.toggleTaskStatus(currentProblem.id);
-    currentProblem.completed = isCompleted;
-    updateCompletedButtonUI(isCompleted);
-    showToast(isCompleted ? "Task Marked as Completed" : "Task Marked Incomplete", isCompleted ? "ph-check-circle" : "ph-circle");
-  });
 
   // Settings Controls
   document.getElementById('btn-settings-toggle').addEventListener('click', () => {
@@ -125,41 +128,56 @@ window.getActiveProblem = function() {
  */
 function loadTaskIntoWorkspace(taskObj) {
   currentProblem = taskObj;
+  AppDB.saveTask(currentProblem);
   renderProblem(currentProblem);
   editor.setValue(currentProblem.boilerplate);
-  resetSuccessButtonState();
-  updateCompletedButtonUI(!!currentProblem.completed);
   AppDB.saveActiveState({ code: editor.getValue(), problem: currentProblem });
 }
 
 function updateCompletedButtonUI(isCompleted) {
-  btnMarkCompleted.classList.toggle('is-completed', isCompleted);
+  const statusPill = document.getElementById('status-indicator-completed');
+  const statusIcon = document.getElementById('icon-mark-completed');
+  const statusText = document.getElementById('text-mark-completed');
+
+  if (!statusPill) return;
+
+  statusPill.classList.toggle('is-completed', isCompleted);
   if (isCompleted) {
-    iconMarkCompleted.className = 'ph-fill ph-check-circle';
-    textMarkCompleted.innerText = 'Completed';
+    statusIcon.className = 'ph-fill ph-check-circle';
+    statusText.innerText = 'Completed';
   } else {
-    iconMarkCompleted.className = 'ph ph-circle';
-    textMarkCompleted.innerText = 'Completed';
+    statusIcon.className = 'ph ph-circle';
+    statusText.innerText = 'In Progress';
   }
 }
 
-function resetSuccessButtonState() {
-  btnNextChallenge.classList.remove('all-passed-success');
-  btnNextChallenge.innerHTML = `<span>Next Task</span> <i class="ph-bold ph-arrow-right"></i>`;
+/**
+ * Next Task button is faded/disabled until ALL test cases pass
+ */
+function updateNextButtonState(canProceed) {
+  if (!btnNextChallenge) return;
+  if (canProceed) {
+    btnNextChallenge.disabled = false;
+    btnNextChallenge.classList.add('all-passed-success');
+    btnNextChallenge.innerHTML = `<span>Next Challenge</span> <i class="ph-bold ph-arrow-right"></i>`;
+  } else {
+    btnNextChallenge.disabled = true;
+    btnNextChallenge.classList.remove('all-passed-success');
+    btnNextChallenge.innerHTML = `<span>Next Task</span> <i class="ph-bold ph-arrow-right"></i>`;
+  }
 }
 
 function loadRandomOrNextProblem() {
-  currentProblem = getRandomAIProblem();
-  renderProblem(currentProblem);
-  editor.setValue(currentProblem.boilerplate);
-  resetSuccessButtonState();
-  updateCompletedButtonUI(false);
-  showToast("Loaded Next Problem", "ph-folder-open");
+  const nextIncomplete = AppDB.getNextIncompleteTask(currentProblem ? currentProblem.id : null);
+  if (nextIncomplete) {
+    loadTaskIntoWorkspace(nextIncomplete);
+    showToast("Loaded " + nextIncomplete.title, "ph-folder-open");
+  } else {
+    AIUI.open();
+    showToast("Generating Next Task with Jupy AI...", "ph-sparkle");
+  }
 }
 
-/**
- * Handles clicking "Next Task" in the sidebar footer
- */
 function handleNextChallengeClick() {
   const nextIncomplete = AppDB.getNextIncompleteTask(currentProblem ? currentProblem.id : null);
   
@@ -167,7 +185,6 @@ function handleNextChallengeClick() {
     loadTaskIntoWorkspace(nextIncomplete);
     showToast("Loaded " + nextIncomplete.title, "ph-folder-open");
   } else {
-    // If no remaining incomplete tasks, open Jupy AI chat to generate a new task!
     AIUI.open();
     showToast("Generating Next Task with Jupy AI...", "ph-sparkle");
   }
@@ -210,6 +227,11 @@ function triggerRunFromTerminal(customCmd) {
 }
 
 async function executeCode() {
+  if (!currentProblem) {
+    showToast("No active problem selected", "ph-warning-circle");
+    return;
+  }
+
   btnRun.disabled = true;
   btnRun.innerHTML = `<i class="ph-fill ph-spinner-gap" style="animation: spin 1s linear infinite;"></i> Running...`;
 
@@ -220,21 +242,34 @@ async function executeCode() {
 
   TerminalManager.renderTestResults(result, currentProblem.functionName);
 
-  // Check if ALL tests passed
-  if (result.results && result.results.length > 0 && result.results.every(r => r.passed)) {
-    if (currentProblem && currentProblem.id) {
-      currentProblem.completed = true;
-      AppDB.saveTask(currentProblem);
-      updateCompletedButtonUI(true);
-    }
+  // STRICT RULE: Completed IF AND ONLY IF ALL test cases pass
+  const allPassed = result.results && result.results.length > 0 && result.results.every(r => r.passed);
 
-    // Trigger glowing green "Next Challenge" transformation!
-    btnNextChallenge.classList.add('all-passed-success');
-    btnNextChallenge.innerHTML = `<span>Next Challenge</span> <i class="ph-bold ph-arrow-right"></i>`;
-    showToast("All Tests Passed! Task Completed", "ph-check-circle");
+  if (currentProblem && currentProblem.id) {
+    currentProblem.completed = allPassed;
+    AppDB.saveTask(currentProblem);
+    if (window.TasksUI) TasksUI.renderKanbanBoard();
+  }
+
+  // Update Status Indicator & Next Task Button state based on test outcome
+  updateCompletedButtonUI(allPassed);
+  updateNextButtonState(allPassed);
+
+  if (allPassed) {
+    showToast("All Tests Passed! Task Unlocked", "ph-check-circle");
+    checkAllTasksCompletedState();
+  } else {
+    showToast("Tests Failed. Correct code to unlock Next Task", "ph-warning-circle");
   }
 
   TerminalManager.appendPrompt(handleTerminalCommand);
+}
+
+function checkAllTasksCompletedState() {
+  const tasks = AppDB.getTasksHistory();
+  if (tasks.length > 0 && tasks.every(t => t.completed)) {
+    renderAllCompletedView();
+  }
 }
 
 function showToast(message, icon) {
@@ -249,11 +284,83 @@ function showToast(message, icon) {
 }
 
 function renderProblem(problem) {
-  document.getElementById('problem-title').innerText = problem.title;
-  document.getElementById('problem-desc').innerHTML = problem.description;
-  document.getElementById('target-time').innerText = problem.targetTimeMs;
-  document.getElementById('problem-examples').innerHTML = problem.examples.map(ex => `<div class="example-card">${ex.replace(/\n/g, '<br>')}</div>`).join('');
-  updateCompletedButtonUI(!!problem.completed);
+  const tasks = AppDB.getTasksHistory();
+  const sidebarContent = document.querySelector('.sidebar-content');
+
+  // Case 1: First Come / No Tasks Exist -> Render Welcome Onboarding State
+  if (tasks.length === 0 && !problem) {
+    sidebarContent.innerHTML = `
+      <div class="welcome-state-card">
+        <div class="welcome-hero-icon"><i class="ph-fill ph-hand-waving"></i></div>
+        <h2 class="title-1">Welcome to Python Studio</h2>
+        <p class="body-text">Choose how you'd like to begin your coding session:</p>
+        
+        <div class="welcome-actions-group">
+          <button id="btn-load-example-task" class="btn btn-primary" style="width: 100%; justify-content: center;">
+            <i class="ph-fill ph-file-code"></i> Load Example Challenge
+          </button>
+          <button id="btn-ask-jupy-task" class="btn btn-secondary" style="width: 100%; justify-content: center;">
+            <i class="ph-fill ph-sparkle" style="color: var(--accent);"></i> Ask Jupy for a Task
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('btn-load-example-task').addEventListener('click', () => {
+      const exampleTask = AppDB.getStarterExampleTask();
+      loadTaskIntoWorkspace(exampleTask);
+      showToast("Loaded Example Challenge", "ph-folder-open");
+    });
+
+    document.getElementById('btn-ask-jupy-task').addEventListener('click', () => AIUI.open());
+    return;
+  }
+
+  // Case 2: All Tasks Completed!
+  if (tasks.length > 0 && tasks.every(t => t.completed)) {
+    renderAllCompletedView();
+    return;
+  }
+
+  // Case 3: Standard Problem View
+  if (!problem) return;
+
+  sidebarContent.innerHTML = `
+    <h1 id="problem-title" class="title-1">${escapeHtml(problem.title)}</h1>
+    <p id="problem-desc" class="body-text">${problem.description}</p>
+    <div class="divider"></div>
+    <span class="section-caps">TEST CASES</span>
+    <div id="problem-examples" class="examples-grid">
+      ${problem.examples.map(ex => `<div class="example-card">${ex.replace(/\n/g, '<br>')}</div>`).join('')}
+    </div>
+    <div class="info-callout">
+      <i class="ph-fill ph-timer"></i> 
+      <span>Target: &le; <span id="target-time">${problem.targetTimeMs}</span>ms</span>
+    </div>
+  `;
+
+  const isCompleted = !!problem.completed;
+  updateCompletedButtonUI(isCompleted);
+  updateNextButtonState(isCompleted);
+}
+
+function renderAllCompletedView() {
+  const sidebarContent = document.querySelector('.sidebar-content');
+  sidebarContent.innerHTML = `
+    <div class="all-completed-state">
+      <div class="completed-hero-icon"><i class="ph-fill ph-check-circle"></i></div>
+      <h2 class="title-1">All Tasks Completed!</h2>
+      <p class="body-text">Awesome work! You've solved every challenge in your library 🎉. Ask Jupy AI to generate your next personalized task!</p>
+      <button id="btn-ask-jupy-task" class="btn btn-primary" style="margin-top: 16px;">
+        <i class="ph-fill ph-sparkle"></i> Ask Jupy for Next Task
+      </button>
+    </div>
+  `;
+  document.getElementById('btn-ask-jupy-task').addEventListener('click', () => AIUI.open());
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 window.addEventListener('DOMContentLoaded', initializeApp);

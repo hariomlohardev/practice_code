@@ -1,0 +1,132 @@
+/* ==========================================================================
+   MACOS SYSTEM SETTINGS MODAL SHEET
+   ========================================================================== */
+.mac-modal-backdrop {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity var(--duration-normal) var(--ease-spring);
+}
+
+.mac-settings-window {
+  width: 700px; height: 520px;
+  background: var(--bg-vibrant);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 0.5px solid var(--border-strong);
+  border-radius: 12px; box-shadow: var(--shadow-lg);
+  display: flex; flex-direction: column; overflow: hidden;
+  animation: sheetEnter var(--duration-normal) var(--ease-spring) forwards;
+}
+
+@keyframes sheetEnter {
+  from { transform: scale(0.94) translateY(-16px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.mac-modal-header {
+  height: 48px; padding: 0 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 0.5px solid var(--border);
+}
+.mac-modal-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+
+.mac-settings-body { display: flex; flex: 1; overflow: hidden; }
+
+.settings-sidebar {
+  width: 210px; flex-shrink: 0; background: rgba(0,0,0,0.2);
+  border-right: 0.5px solid var(--border); padding: 12px; display: flex; flex-direction: column; gap: 4px;
+}
+
+.settings-nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 6px; border: none;
+  background: transparent; color: var(--text-secondary); font-family: var(--font-system); font-size: 12.5px; font-weight: 500;
+  cursor: pointer; transition: all var(--duration-fast); text-align: left;
+}
+.settings-nav-item i { font-size: 16px; color: var(--text-tertiary); }
+.settings-nav-item:hover { background: var(--surface-hover); color: var(--text-primary); }
+.settings-nav-item.active { background: rgba(255,255,255,0.12); color: var(--text-primary); font-weight: 600; }
+.settings-nav-item.active i { color: var(--accent); }
+
+.settings-nav-divider { height: 0.5px; background: var(--border); margin: 6px 0; }
+
+.settings-content { flex: 1; padding: 20px 24px; overflow-y: auto; background: var(--bg-primary); }
+.settings-panel { display: flex; flex-direction: column; gap: 16px; }
+.panel-title { font-size: 18px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.01em; }
+
+.google-notice-card {
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px;
+  background: rgba(255, 214, 10, 0.08); border: 0.5px solid rgba(255, 214, 10, 0.25);
+  border-radius: 8px; font-size: 12px; line-height: 1.4;
+}
+.notice-star { font-size: 18px; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+.notice-text { display: flex; flex-direction: column; gap: 2px; }
+.notice-text strong { color: var(--accent); font-weight: 600; }
+.notice-text span { color: var(--text-secondary); }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 11.5px; font-weight: 600; color: var(--text-tertiary); letter-spacing: 0.02em; }
+.form-error { font-size: 11px; color: var(--term-red); margin-top: 2px; }
+
+.mac-input, .mac-select {
+  width: 100%; height: 32px; background: rgba(0,0,0,0.3);
+  border: 0.5px solid var(--border-strong); border-radius: 6px;
+  padding: 0 10px; color: var(--text-primary); font-family: var(--font-system);
+  font-size: 12.5px; outline: none; transition: border-color var(--duration-fast);
+}
+.mac-input:focus, .mac-select:focus { border-color: var(--accent); }
+
+.mac-model-picker { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; padding-right: 4px; }
+.model-card {
+  background: rgba(255,255,255,0.04); border: 0.5px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between;
+  align-items: center; cursor: pointer; transition: all var(--duration-fast) var(--ease-spring);
+}
+.model-card:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+.model-card.active { background: rgba(255, 214, 10, 0.12); border-color: rgba(255, 214, 10, 0.4); }
+.model-info { display: flex; flex-direction: column; gap: 2px; }
+.model-name { font-size: 12.5px; font-weight: 600; color: var(--text-primary); }
+.model-desc { font-size: 11px; color: var(--text-tertiary); }
+.model-check { font-size: 18px; color: var(--accent); opacity: 0; }
+.model-card.active .model-check { opacity: 1; }
+
+.about-hero { text-align: center; padding: 12px 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.about-icon { font-size: 44px; color: var(--text-primary); margin-bottom: 4px; }
+.about-title { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+
+.mac-group-list { background: var(--bg-secondary); border-radius: 8px; border: 0.5px solid var(--border); overflow: hidden; display: flex; flex-direction: column; }
+.mac-list-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; font-size: 12.5px; border-bottom: 0.5px solid var(--border); color: var(--text-primary); text-decoration: none; }
+.mac-list-row:last-child { border-bottom: none; }
+.mac-list-row.link-row:hover { background: var(--surface-hover); }
+.row-left { display: flex; align-items: center; gap: 10px; }
+.row-left i { font-size: 16px; color: var(--accent); }
+
+.mac-modal-footer { height: 48px; padding: 0 20px; display: flex; justify-content: flex-end; align-items: center; border-top: 0.5px solid var(--border); background: var(--bg-secondary); }
+
+/* Toasts & Overlays */
+#toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
+.mac-toast {
+  background: rgba(40,40,40,0.88); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border: 0.5px solid var(--border-strong); border-radius: 8px; padding: 10px 16px; box-shadow: var(--shadow-md);
+  display: flex; align-items: center; gap: 10px; font-family: var(--font-system); font-size: 12.5px; font-weight: 500; color: #fff;
+  transform: translateY(100%); opacity: 0; animation: toastEnter var(--duration-normal) var(--ease-spring) forwards;
+}
+.mac-toast.exit { animation: toastExit var(--duration-normal) var(--ease-spring) forwards; }
+.mac-toast i { color: var(--accent); font-size: 16px; }
+
+@keyframes toastEnter { to { transform: translateY(0); opacity: 1; } }
+@keyframes toastExit { to { transform: translateX(120%); opacity: 0; } }
+
+.macos-overlay {
+  position: fixed; inset: 0; background: var(--bg-primary); z-index: 200;
+  display: flex; align-items: center; justify-content: center; transition: opacity var(--duration-normal) var(--ease-spring);
+}
+.loader-box { text-align: center; }
+.spinner {
+  width: 26px; height: 26px; border: 2.5px solid var(--border-strong);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 1s linear infinite; margin: 0 auto 12px;
+}
+.loader-text { font-weight: 500; color: var(--text-secondary); }
+@keyframes spin { to { transform: rotate(360deg); } }

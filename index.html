@@ -26,8 +26,12 @@
   <!-- Modular Styles -->
   <link rel="stylesheet" href="styles/theme.css" />
   <link rel="stylesheet" href="styles/chrome.css" />
+  <link rel="stylesheet" href="styles/sidebar.css" />
+  <link rel="stylesheet" href="styles/modals.css" />
+  <link rel="stylesheet" href="styles/ai-chat.css" />
   <link rel="stylesheet" href="styles/editor.css" />
   <link rel="stylesheet" href="styles/terminal.css" />
+  <link rel="stylesheet" href="styles/kanban.css" />
 </head>
 <body>
 
@@ -42,35 +46,54 @@
   <!-- Toast Container -->
   <div id="toast-container"></div>
 
-  <!-- macOS Tasks & Files Library Modal -->
+  <!-- Notion-Style 2-Column Tasks Library Modal -->
   <div id="tasks-modal" class="mac-modal-backdrop hidden">
-    <div class="mac-tasks-window">
+    <div class="mac-kanban-window">
       <div class="mac-modal-header">
         <div class="mac-traffic-lights">
           <div class="dot red" id="btn-close-tasks-dot" title="Close"></div>
         </div>
         <div class="ai-header-title">
-          <i class="ph-fill ph-folder-open" style="color: var(--accent);"></i>
-          <span>Tasks & Workspace Library</span>
+          <i class="ph-fill ph-kanban" style="color: var(--accent);"></i>
+          <span>Workspace Board</span>
         </div>
         <button id="btn-close-tasks" class="icon-btn"><i class="ph ph-x"></i></button>
       </div>
 
-      <div class="tasks-toolbar">
-        <div class="mac-segmented-control" style="width: 280px;">
-          <button class="seg-btn active" id="filter-task-all">All</button>
-          <button class="seg-btn" id="filter-task-incomplete">Incomplete</button>
-          <button class="seg-btn" id="filter-task-completed">Completed</button>
+      <div class="kanban-control-bar">
+        <div class="kanban-bar-left">
+          <div class="view-selector">
+            <i class="ph-bold ph-kanban"></i>
+            <span>Task Completion Board</span>
+          </div>
         </div>
-
-        <div class="search-wrap">
-          <i class="ph ph-magnifying-glass search-icon"></i>
-          <input type="text" id="task-search-input" class="mac-input task-search" placeholder="Search tasks..." autocomplete="off" />
+        <div class="kanban-tools">
+          <input type="text" id="task-search-input" class="kanban-search-input" placeholder="Search tasks..." autocomplete="off" />
         </div>
       </div>
 
-      <div class="tasks-body">
-        <div id="tasks-list-container" class="tasks-list"></div>
+      <div class="kanban-board-body">
+        <div class="kanban-columns-container">
+          <div class="kanban-column">
+            <div class="column-header">
+              <div class="col-pill-wrap">
+                <span class="col-pill todo">Incomplete</span>
+                <span class="col-count" id="count-incomplete">0</span>
+              </div>
+            </div>
+            <div id="col-list-incomplete" class="column-cards-list"></div>
+          </div>
+
+          <div class="kanban-column">
+            <div class="column-header">
+              <div class="col-pill-wrap">
+                <span class="col-pill completed">Completed (Passed)</span>
+                <span class="col-count" id="count-completed">0</span>
+              </div>
+            </div>
+            <div id="col-list-completed" class="column-cards-list"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -284,13 +307,13 @@
             </div>
           </div>
 
-          <!-- Horizontal Sidebar Footer Action Bar -->
+          <!-- Non-Interactive Status Indicator + Test-Locked Next Task Button -->
           <div class="sidebar-footer">
-            <button id="btn-mark-completed" class="btn btn-secondary btn-complete-toggle">
+            <div id="status-indicator-completed" class="status-indicator-pill">
               <i class="ph ph-circle" id="icon-mark-completed"></i> 
-              <span id="text-mark-completed">Completed</span>
-            </button>
-            <button id="btn-next-challenge" class="btn btn-primary btn-next-task">
+              <span id="text-mark-completed">In Progress</span>
+            </div>
+            <button id="btn-next-challenge" class="btn btn-primary btn-next-task" disabled>
               <span>Next Task</span> <i class="ph-bold ph-arrow-right"></i>
             </button>
           </div>
